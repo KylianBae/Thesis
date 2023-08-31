@@ -23,6 +23,6 @@ def initialize_population(initial_size:int,ploidy_number:int,loci_number:int):
         population.append(individual)
     return population
 
-print(initialize_population(10,2,4))
-def meisosis(population):
-    
+def mate(start_population):
+    pop = []
+    while len(pop) < len(start_population)
