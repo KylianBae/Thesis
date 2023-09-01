@@ -25,4 +25,5 @@ def initialize_population(initial_size:int,ploidy_number:int,loci_number:int):
 
 def mate(start_population):
     pop = []
-    while len(pop) < len(start_population)
+    while len(pop) < len(start_population):
+        
