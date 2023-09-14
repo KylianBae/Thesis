@@ -24,6 +24,12 @@ def initialize_population(initial_size:int,ploidy_number:int,loci_number:int):
     return population
 
 def mate(start_population):
-    pop = []
-    while len(pop) < len(start_population):
-        
+    new_pop = []
+    while len(new_pop) < len(start_population):
+        paired= []
+        while start_population:
+            pair = random.sample(start_population, 2)
+            paired.append(pair)
+            start_population.remove(pair[0])
+            start_population.remove(pair[1])
+
