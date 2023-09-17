@@ -23,19 +23,32 @@ def initialize_population(initial_size:int,ploidy_number:int,loci_number:int):
         population.append(individual)
     return population
 
-def meiosis(*args,v=0.5):
+def meiosis(individuals,v=0.5):
     gametes = []
-    for arg in args:
+    for arg in individuals:
         if len(arg) == 2:
-            gametes.append(random.sample(arg,1))
+            chromosomes = random.choices([1,2],weights=(1-v,v),k=1)
+            if chromosomes[0] == 1:
+                gametes.append(random.sample(arg,1)[0])
+            else:
+                gametes.append(arg)
         if len(arg) == 3 and random.uniform(0,1) < 0.3:
             chromosomes = random.choices([1,2,3],weights=(25,25,50),k=1) # 1 represents haploid, 2 diploid and 3 triploid (optional)
-            gametes.append(random.sample(arg,chromosomes[0]))
+            gametes.append(random.sample(arg,chromosomes[0])[0])
         if len(arg) == 4:
             chromosomes = random.choices([1,2],weights=(1- v,v),k=1)
             if chromosomes[0] == 1:
-                gametes.append(random.sample(arg,1))    
-    return gametes
+                gametes.append(random.sample(arg,1)[0])    
+    return flattenlist(gametes)
+
+def flattenlist(lst):
+    flat = []
+    for item in lst:
+        if isinstance(item,list):
+            flat.extend(flattenlist(item))
+        else:
+            flat.append(item)
+    return flat
 
 def mate(start_population):
     new_pop = []
@@ -46,7 +59,6 @@ def mate(start_population):
            new_pop.append(gametes)
     return new_pop
 
-
-#print(mate(initialize_population(3,2,2)))
-print(initialize_population(3,2,2))
-print(random.sample(initialize_population(3,2,2),2))
+x = initialize_population(4,2,2)
+print(x)
+print(mate(x))
