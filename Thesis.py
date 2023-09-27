@@ -57,7 +57,7 @@ def meiosis(arg,v):
 def cytotype_dynamics(initial_population:list,max_generations:int,v:float):
     t = 1
     n = len(initial_population)
-    freq_diploid, freq_triploid, freq_tetraploid = [1000], [0], [0]
+    freq_diploid, freq_triploid, freq_tetraploid = [n], [0], [0]
     while t < max_generations:
         new_pop = []
         while len(new_pop) < n:
