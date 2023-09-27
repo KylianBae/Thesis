@@ -87,4 +87,4 @@ def makeplot(data):
 
 # Example
 x = initialize_population(1000,2,2)
-print(makeplot(cytotype_dynamics(x,1000,0.1)[0:]))
+print(makeplot(cytotype_dynamics(x,1000,0.01)[0:]))
