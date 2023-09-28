@@ -54,7 +54,7 @@ def meiosis(arg,v):
             gametes.append(poss_gametes[1])   
     return gametes
 
-def cytotype_dynamics(initial_population:list,max_generations:int,v:float):
+def cytotype_dynamics(initial_population:list,max_generations:int,v:float, reps:int):
     t = 1
     n = len(initial_population)
     freq_diploid, freq_triploid, freq_tetraploid = [n], [0], [0]
@@ -71,6 +71,7 @@ def cytotype_dynamics(initial_population:list,max_generations:int,v:float):
         freq_triploid.append(sum(1 for individual in new_pop if len(individual) == 3)) # count how many triploids in each generation
         freq_tetraploid.append(sum(1 for individual in new_pop if len(individual) == 4)) # count how many tetraploids in each generation
         t += 1
+    
     return [new_pop,t,freq_diploid,freq_triploid,freq_tetraploid]
 
 def makeplot(data):
@@ -85,6 +86,7 @@ def makeplot(data):
     plt.legend()
     plt.show()
 
+
 # Example
-x = initialize_population(1000,2,2)
-print(makeplot(cytotype_dynamics(x,1000,0.01)[0:]))
+x = initialize_population(100,2,2)
+print(makeplot(single_cytotype_dynamics(x,100,0.05)[0:]))
