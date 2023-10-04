@@ -55,24 +55,26 @@ def meiosis(arg,v):
     return gametes
 
 def cytotype_dynamics(initial_population:list,max_generations:int,v:float, reps:int):
-    t = 1
-    n = len(initial_population)
-    freq_diploid, freq_triploid, freq_tetraploid = [n], [0], [0]
-    while t < max_generations:
-        new_pop = []
-        while len(new_pop) < n:
-            pair = random.sample(initial_population,2)
-            first = meiosis(pair[0],v)
-            second = meiosis(pair[1],v)
-            if first != [] and second != [] and len(first + second) < 5:
-                offspring = first + second
-                new_pop.append(offspring)
-        freq_diploid.append(sum(1 for individual in new_pop if len(individual) == 2)) # count how many diploids in each generation
-        freq_triploid.append(sum(1 for individual in new_pop if len(individual) == 3)) # count how many triploids in each generation
-        freq_tetraploid.append(sum(1 for individual in new_pop if len(individual) == 4)) # count how many tetraploids in each generation
-        t += 1
-    
-    return [new_pop,t,freq_diploid,freq_triploid,freq_tetraploid]
+    results = []
+    for i in range(0,reps):
+        t = 1
+        n = len(initial_population)
+        freq_diploid, freq_triploid, freq_tetraploid = [n], [0], [0]
+        while t < max_generations:
+            new_pop = []
+            while len(new_pop) < n:
+                pair = random.sample(initial_population,2)
+                first = meiosis(pair[0],v)
+                second = meiosis(pair[1],v)
+                if first != [] and second != [] and len(first + second) < 5:
+                    offspring = first + second
+                    new_pop.append(offspring)
+            freq_diploid.append(sum(1 for individual in new_pop if len(individual) == 2)) # count how many diploids in each generation
+            freq_triploid.append(sum(1 for individual in new_pop if len(individual) == 3)) # count how many triploids in each generation
+            freq_tetraploid.append(sum(1 for individual in new_pop if len(individual) == 4)) # count how many tetraploids in each generation
+            t += 1
+        results.append([new_pop,t,freq_diploid,freq_triploid,freq_tetraploid])
+    return results
 
 def makeplot(data):
     t = list(range(1,data[1]+1))
@@ -89,4 +91,4 @@ def makeplot(data):
 
 # Example
 x = initialize_population(100,2,2)
-print(makeplot(single_cytotype_dynamics(x,100,0.05)[0:]))
+print(len(cytotype_dynamics(x,100,0.05,20)))
