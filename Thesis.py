@@ -56,6 +56,9 @@ def meiosis(arg,v):
 
 def cytotype_dynamics(initial_population:list,max_generations:int,v:float, reps:int):
     results = []
+    diploids = []
+    triploids = []
+    tetraploids = []
     for i in range(0,reps):
         t = 1
         n = len(initial_population)
@@ -73,22 +76,35 @@ def cytotype_dynamics(initial_population:list,max_generations:int,v:float, reps:
             freq_triploid.append(sum(1 for individual in new_pop if len(individual) == 3)) # count how many triploids in each generation
             freq_tetraploid.append(sum(1 for individual in new_pop if len(individual) == 4)) # count how many tetraploids in each generation
             t += 1
-        results.append([new_pop,t,freq_diploid,freq_triploid,freq_tetraploid])
-    return results
+        diploids.append(freq_diploid)
+        triploids.append(freq_triploid)
+        tetraploids.append(freq_tetraploid)
+    mean_diploids = get_mean_of_freq_overreps(diploids,reps)
+    mean_triploids = get_mean_of_freq_overreps(triploids,reps)
+    mean_tetraploids = get_mean_of_freq_overreps(tetraploids,reps)
+    return max_generations,mean_diploids,mean_triploids,mean_tetraploids
+
+def get_mean_of_freq_overreps(data,reps):
+    mean_values = [0] * len(data[0])
+    for rep in data:
+        for i, value in enumerate(rep):
+            mean_values[i] += value
+    mean_values = [(value/reps) for value in mean_values]
+    return mean_values
+
 
 def makeplot(data):
-    t = list(range(1,data[1]+1))
+    t = list(range(1,data[0]+1))
     plt.figure()
-    plt.plot(t,data[2], label= "Frequency diploid")
-    plt.plot(t,data[3], label= "Frequency triploid")
-    plt.plot(t,data[4], label= "Frequency tetraploid")
+    plt.plot(t,data[1], label= "Frequency diploid")
+    plt.plot(t,data[2], label= "Frequency triploid")
+    plt.plot(t,data[3], label= "Frequency tetraploid")
     plt.xlabel("Generation")
     plt.ylabel("Frequency")
     plt.title("Plot of frequencies of diploids, triploids and tetraploids per generation")
     plt.legend()
     plt.show()
 
-
 # Example
 x = initialize_population(100,2,2)
-print(len(cytotype_dynamics(x,100,0.05,20)))
+print(makeplot(cytotype_dynamics(x,100,0.1,20)))
