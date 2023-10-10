@@ -92,7 +92,6 @@ def get_mean_of_freq_overreps(data,reps):
     mean_values = [(value/reps) for value in mean_values]
     return mean_values
 
-
 def makeplot(data):
     t = list(range(1,data[0]+1))
     plt.figure()
