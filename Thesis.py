@@ -35,7 +35,7 @@ def meiosis(arg,v,f):
             gametes.append(arg[0])
             gametes.append(arg[1])
     if len(arg) == 3 and random.uniform(0,1) < f:
-        chromosomes = random.choices([1,2,3],weights=(25,25,50),k=1) # 1 represents haploid, 2 diploid and 3 triploid (optional)
+        chromosomes = random.choices([1,2,3],weights=(0.25,0.25,0.50),k=1) # 1 represents haploid, 2 diploid and 3 triploid (optional)
         poss_gametes = random.sample(arg,chromosomes[0])
         if chromosomes[0] == 1:
             gametes.append(poss_gametes[0])
@@ -47,15 +47,22 @@ def meiosis(arg,v,f):
             gametes.append(poss_gametes[1])
             gametes.append(poss_gametes[2])
     if len(arg) == 4:
-        chromosomes = random.choices([1,2],weights=(1- v,v),k=1) # choice for diploid gametes or no gametes
+        chromosomes = random.choices([1,2],weights=(1-v,v),k=1) # choice for diploid gametes or no gametes
         if chromosomes[0] == 1:
             poss_gametes = random.sample(arg,2)
             gametes.append(poss_gametes[0])
             gametes.append(poss_gametes[1])   
     return gametes
 
+def get_mean_of_freq_overreps(data,reps):
+    mean_values = [0] * len(data[0])
+    for rep in data:
+        for i, value in enumerate(rep):
+            mean_values[i] += value
+    mean_values = [(value/reps) for value in mean_values]
+    return mean_values
+
 def cytotype_dynamics(initial_population:list,max_generations:int,v:float,f:float,reps:int):
-    results = []
     diploids = []
     triploids = []
     tetraploids = []
@@ -84,30 +91,30 @@ def cytotype_dynamics(initial_population:list,max_generations:int,v:float,f:floa
     mean_tetraploids = get_mean_of_freq_overreps(tetraploids,reps)
     return max_generations,mean_diploids,mean_triploids,mean_tetraploids
 
-def get_mean_of_freq_overreps(data,reps):
-    mean_values = [0] * len(data[0])
-    for rep in data:
-        for i, value in enumerate(rep):
-            mean_values[i] += value
-    mean_values = [(value/reps) for value in mean_values]
-    return mean_values
-
-def makeplot(data):
+def makeplot(data,data2):
     t = list(range(1,data[0]+1))
-    plt.figure()
+    plt.figure(figsize=(12, 5))
+
+    plt.subplot(1,2,1)
     plt.plot(t,data[1], label= "Frequency diploid")
     plt.plot(t,data[2], label= "Frequency triploid")
     plt.plot(t,data[3], label= "Frequency tetraploid")
     plt.xlabel("Generation")
     plt.ylabel("Frequency")
-    plt.title("Plot of frequencies of diploids, triploids and tetraploids per generation")
+    plt.title("Frequencies of di-,tri- and tetraploids per generation")
+    plt.legend()
+
+    plt.subplot(1,2,2)
+    plt.plot(t,data2[1], label= "Frequency diploid")
+    plt.plot(t,data2[2], label= "Frequency triploid")
+    plt.plot(t,data2[3], label= "Frequency tetraploid")
+    plt.xlabel("Generation")
+    plt.ylabel("Frequency")
+    plt.title("Frequencies of di-,tri- and tetraploids per generation")
     plt.legend()
     plt.show()
 
 # Example
-x = initialize_population(100,2,2)
-print(makeplot(cytotype_dynamics(x,100,0.1,0.3,20)))
-
 def recursive_NL_equations(max_generations,v,f,d1,d2,d3):
     # Initial conditions
     x2 = 1  # represent frequencies of diploid
@@ -116,17 +123,21 @@ def recursive_NL_equations(max_generations,v,f,d1,d2,d3):
     x2_list = []
     x3_list = []
     x4_list = []
-    for i in range(1,max_generations + 1):
+    for i in range(max_generations):
         x2_list.append(x2)
         x3_list.append(x3)
         x4_list.append(x4)
-        g1 = (x2 * (1-v)) + (d1 * x3 * f)
-        g2= (x2 * v) + (d2 * x3 * f) + (x4 * (1-v))
-        g3 = (d3 * x3 * f) 
+        # update gamete proportions
+        g1 =x2 * (1-v) + d1 * x3 * f
+        g2= x2 * v + d2 * x3 * f + x4 * (1-v)
+        g3 = d3 * x3 * f
         o = (g1 + g2 + g3)**2
-        x2 = (g1)**2 /o
-        x3 = (2 * g1 * g2) / o
+        # update genotype frequencies
+        x2 = g1**2 /o
+        x3 = 2 * g1 * g2 / o
         x4 = (g2**2 + (2 * g1 * g3)) / o
     return max_generations,x2_list,x3_list,x4_list
-makeplot(recursive_NL_equations(100,0.1,0.3,0.25,0.25,0.5))
+
+x = initialize_population(100,2,2)
+makeplot(cytotype_dynamics(x,100,0.1,0.3,20),recursive_NL_equations(100,0.1,0.3,0.25,0.25,0.5))
     
