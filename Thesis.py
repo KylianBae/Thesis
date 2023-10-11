@@ -25,7 +25,7 @@ def initialize_population(initial_size:int,ploidy_number:int,loci_number:int):
         population.append(individual)
     return population
 
-def meiosis(arg,v):
+def meiosis(arg,v,f):
     gametes = []
     if len(arg) == 2:  
         chromosomes = random.choices([1,2],weights=(1-v,v),k=1) # choice for reduced or unreduced gametes
@@ -34,7 +34,7 @@ def meiosis(arg,v):
         else:
             gametes.append(arg[0])
             gametes.append(arg[1])
-    if len(arg) == 3 and random.uniform(0,1) < 0.3:
+    if len(arg) == 3 and random.uniform(0,1) < f:
         chromosomes = random.choices([1,2,3],weights=(25,25,50),k=1) # 1 represents haploid, 2 diploid and 3 triploid (optional)
         poss_gametes = random.sample(arg,chromosomes[0])
         if chromosomes[0] == 1:
@@ -54,7 +54,7 @@ def meiosis(arg,v):
             gametes.append(poss_gametes[1])   
     return gametes
 
-def cytotype_dynamics(initial_population:list,max_generations:int,v:float, reps:int):
+def cytotype_dynamics(initial_population:list,max_generations:int,v:float,f:float,reps:int):
     results = []
     diploids = []
     triploids = []
@@ -67,8 +67,8 @@ def cytotype_dynamics(initial_population:list,max_generations:int,v:float, reps:
             new_pop = []
             while len(new_pop) < n:
                 pair = random.sample(initial_population,2)
-                first = meiosis(pair[0],v)
-                second = meiosis(pair[1],v)
+                first = meiosis(pair[0],v,f)
+                second = meiosis(pair[1],v,f)
                 if first != [] and second != [] and len(first + second) < 5:
                     offspring = first + second
                     new_pop.append(offspring)
@@ -106,4 +106,27 @@ def makeplot(data):
 
 # Example
 x = initialize_population(100,2,2)
-print(makeplot(cytotype_dynamics(x,100,0.1,20)))
+print(makeplot(cytotype_dynamics(x,100,0.1,0.3,20)))
+
+def recursive_NL_equations(max_generations,v,f,d1,d2,d3):
+    # Initial conditions
+    x2 = 1  # represent frequencies of diploid
+    x3 = 0  # represent frequencies of triploid
+    x4 = 0  # represent frequencies of tetraploid
+    x2_list = []
+    x3_list = []
+    x4_list = []
+    for i in range(1,max_generations + 1):
+        x2_list.append(x2)
+        x3_list.append(x3)
+        x4_list.append(x4)
+        g1 = x2 * (1-v) + d1 * x3 * f
+        g2= x2 * v + d2 * x3 * f + x4 * (1-v)
+        g3 = d3 * x3 * f 
+        o = (g1 + g2 + g3)**2
+        x2 = (g1)**2 /o
+        x3 = (2 * g1 * g2) / o
+        x4 = (g2**2 + (2 * g1 * g3)) / o
+    return x2_list,x3_list,x4_list
+print(recursive_NL_equations(100,0.1,0.3,0.25,0.25,0.5))
+    
