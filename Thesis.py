@@ -120,13 +120,13 @@ def recursive_NL_equations(max_generations,v,f,d1,d2,d3):
         x2_list.append(x2)
         x3_list.append(x3)
         x4_list.append(x4)
-        g1 = x2 * (1-v) + d1 * x3 * f
-        g2= x2 * v + d2 * x3 * f + x4 * (1-v)
-        g3 = d3 * x3 * f 
+        g1 = (x2 * (1-v)) + (d1 * x3 * f)
+        g2= (x2 * v) + (d2 * x3 * f) + (x4 * (1-v))
+        g3 = (d3 * x3 * f) 
         o = (g1 + g2 + g3)**2
         x2 = (g1)**2 /o
         x3 = (2 * g1 * g2) / o
         x4 = (g2**2 + (2 * g1 * g3)) / o
-    return x2_list,x3_list,x4_list
-print(recursive_NL_equations(100,0.1,0.3,0.25,0.25,0.5))
+    return max_generations,x2_list,x3_list,x4_list
+makeplot(recursive_NL_equations(100,0.1,0.3,0.25,0.25,0.5))
     
