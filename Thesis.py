@@ -69,7 +69,7 @@ def cytotype_dynamics(initial_population:list,max_generations:int,v:float,f:floa
     for i in range(0,reps):
         t = 1
         n = len(initial_population)
-        freq_diploid, freq_triploid, freq_tetraploid = [n], [0], [0]
+        freq_diploid, freq_triploid, freq_tetraploid = [1], [0], [0]
         while t < max_generations:
             new_pop = []
             while len(new_pop) < n:
@@ -79,9 +79,9 @@ def cytotype_dynamics(initial_population:list,max_generations:int,v:float,f:floa
                 if first != [] and second != [] and len(first + second) < 5:
                     offspring = first + second
                     new_pop.append(offspring)
-            freq_diploid.append(sum(1 for individual in new_pop if len(individual) == 2)) # count how many diploids in each generation
-            freq_triploid.append(sum(1 for individual in new_pop if len(individual) == 3)) # count how many triploids in each generation
-            freq_tetraploid.append(sum(1 for individual in new_pop if len(individual) == 4)) # count how many tetraploids in each generation
+            freq_diploid.append(sum(1 for individual in new_pop if len(individual) == 2)/len(initial_population)) # count how many diploids in each generation
+            freq_triploid.append(sum(1 for individual in new_pop if len(individual) == 3)/len(initial_population)) # count how many triploids in each generation
+            freq_tetraploid.append(sum(1 for individual in new_pop if len(individual) == 4)/len(initial_population)) # count how many tetraploids in each generation
             t += 1
         diploids.append(freq_diploid)
         triploids.append(freq_triploid)
@@ -114,19 +114,15 @@ def makeplot(data,data2):
     plt.legend()
     plt.show()
 
-# Example
 def recursive_NL_equations(max_generations,v,f,d1,d2,d3):
     # Initial conditions
     x2 = 1  # represent frequencies of diploid
     x3 = 0  # represent frequencies of triploid
     x4 = 0  # represent frequencies of tetraploid
-    x2_list = []
-    x3_list = []
-    x4_list = []
-    for i in range(max_generations):
-        x2_list.append(x2)
-        x3_list.append(x3)
-        x4_list.append(x4)
+    x2_list = [1]
+    x3_list = [0]
+    x4_list = [0]
+    for i in range(max_generations-1):
         # update gamete proportions
         g1 =x2 * (1-v) + d1 * x3 * f
         g2= x2 * v + d2 * x3 * f + x4 * (1-v)
@@ -136,6 +132,9 @@ def recursive_NL_equations(max_generations,v,f,d1,d2,d3):
         x2 = g1**2 /o
         x3 = 2 * g1 * g2 / o
         x4 = (g2**2 + (2 * g1 * g3)) / o
+        x2_list.append(x2)
+        x3_list.append(x3)
+        x4_list.append(x4)
     return max_generations,x2_list,x3_list,x4_list
 
 x = initialize_population(100,2,2)
