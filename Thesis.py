@@ -34,19 +34,19 @@ def meiosis(arg,v,f):
         else:
             gametes.append(arg[0])
             gametes.append(arg[1])
-    if len(arg) == 3 and random.uniform(0,1) < f:
+    elif len(arg) == 3 and random.uniform(0,1) < f:
         chromosomes = random.choices([1,2,3],weights=(0.25,0.25,0.50),k=1) # 1 represents haploid, 2 diploid and 3 triploid (optional)
         poss_gametes = random.sample(arg,chromosomes[0])
         if chromosomes[0] == 1:
             gametes.append(poss_gametes[0])
-        if chromosomes[0] == 2:
+        elif chromosomes[0] == 2:
             gametes.append(poss_gametes[0])
             gametes.append(poss_gametes[1])
-        if chromosomes[0] == 3:
+        elif chromosomes[0] == 3:
             gametes.append(poss_gametes[0])
             gametes.append(poss_gametes[1])
             gametes.append(poss_gametes[2])
-    if len(arg) == 4:
+    elif len(arg) == 4:
         chromosomes = random.choices([1,2],weights=(1-v,v),k=1) # choice for diploid gametes or no gametes
         if chromosomes[0] == 1:
             poss_gametes = random.sample(arg,2)
