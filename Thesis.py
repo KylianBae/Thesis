@@ -53,7 +53,7 @@ def meiosis(arg,v,f):
             gametes.append(poss_gametes[0])
             gametes.append(poss_gametes[1])   
     return gametes
-
+# add elif statements and  use uniform
 def get_mean_of_freq_overreps(data,reps):
     mean_values = [0] * len(data[0])
     for rep in data:
@@ -61,7 +61,8 @@ def get_mean_of_freq_overreps(data,reps):
             mean_values[i] += value
     mean_values = [(value/reps) for value in mean_values]
     return mean_values
-
+# change initial to ne wpop ==> always update
+# na each rep opnieuw initialpop opstarten ==> dus een nieuwe onafhankelijke trials
 def cytotype_dynamics(initial_population:list,max_generations:int,v:float,f:float,reps:int):
     diploids = []
     triploids = []
