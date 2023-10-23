@@ -53,7 +53,7 @@ def meiosis(arg,v,f):
             gametes.append(poss_gametes[0])
             gametes.append(poss_gametes[1])   
     return gametes
-# add elif statements and  use uniform
+# and  use uniform
 def get_mean_of_freq_overreps(data,reps):
     mean_values = [0] * len(data[0])
     for rep in data:
