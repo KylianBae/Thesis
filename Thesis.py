@@ -72,17 +72,19 @@ def cytotype_dynamics(initial_size:int,ploidy_number:int,loci_number:int,max_gen
     for i in range(0,reps):
         initial_population = initialize_population(initial_size,loci_number,ploidy_number) # na each rep opnieuw initialpop opstarten ==> dus een nieuwe onafhankelijke trials
         t = 1
-        n = 2 * len(initial_population)
+        n = len(initial_population)
         freq_diploid, freq_triploid, freq_tetraploid = [1], [0], [0]
         while t < max_generations:
             new_pop = initial_population
-            while len(new_pop) < n:
+            offsprings = []
+            while len(offsprings) < n:
                 pair = random.sample(new_pop,2)
                 first = meiosis(pair[0],v,f)
                 second = meiosis(pair[1],v,f)
                 if first != [] and second != [] and len(first + second) < 5:
                     offspring = first + second
                     new_pop.append(offspring)
+                    offsprings.append(offspring)
             freq_diploid.append(sum(1 for individual in new_pop if len(individual) == 2)/len(new_pop)) # count how many diploids in each generation
             freq_triploid.append(sum(1 for individual in new_pop if len(individual) == 3)/len(new_pop)) # count how many triploids in each generation
             freq_tetraploid.append(sum(1 for individual in new_pop if len(individual) == 4)/len(new_pop)) # count how many tetraploids in each generation
@@ -141,6 +143,6 @@ def recursive_NL_equations(max_generations,v,f,d1,d2,d3):
         x4_list.append(x4)
     return max_generations,x2_list,x3_list,x4_list
 
-makeplot(cytotype_dynamics(100,2,2,100,0.1,0.3,20),recursive_NL_equations(100,0.1,0.3,0.25,0.25,0.5))
+makeplot(cytotype_dynamics(100,2,2,100,0.15,0.3,20),recursive_NL_equations(100,0.15,0.3,0.25,0.25,0.5))
 
 
