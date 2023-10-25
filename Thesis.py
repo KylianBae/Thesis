@@ -54,6 +54,8 @@ def meiosis(arg,v,f):
             gametes.append(poss_gametes[1])   
     return gametes
 # and  use uniform
+
+
 def get_mean_of_freq_overreps(data,reps):
     mean_values = [0] * len(data[0])
     for rep in data:
@@ -62,27 +64,28 @@ def get_mean_of_freq_overreps(data,reps):
     mean_values = [(value/reps) for value in mean_values]
     return mean_values
 # change initial to ne wpop ==> always update
-# na each rep opnieuw initialpop opstarten ==> dus een nieuwe onafhankelijke trials
-def cytotype_dynamics(initial_population:list,max_generations:int,v:float,f:float,reps:int):
+
+def cytotype_dynamics(initial_size:int,ploidy_number:int,loci_number:int,max_generations:int,v:float,f:float,reps:int):
     diploids = []
     triploids = []
     tetraploids = []
     for i in range(0,reps):
+        initial_population = initialize_population(initial_size,loci_number,ploidy_number) # na each rep opnieuw initialpop opstarten ==> dus een nieuwe onafhankelijke trials
         t = 1
-        n = len(initial_population)
+        n = 2 * len(initial_population)
         freq_diploid, freq_triploid, freq_tetraploid = [1], [0], [0]
         while t < max_generations:
-            new_pop = []
+            new_pop = initial_population
             while len(new_pop) < n:
-                pair = random.sample(initial_population,2)
+                pair = random.sample(new_pop,2)
                 first = meiosis(pair[0],v,f)
                 second = meiosis(pair[1],v,f)
                 if first != [] and second != [] and len(first + second) < 5:
                     offspring = first + second
                     new_pop.append(offspring)
-            freq_diploid.append(sum(1 for individual in new_pop if len(individual) == 2)/len(initial_population)) # count how many diploids in each generation
-            freq_triploid.append(sum(1 for individual in new_pop if len(individual) == 3)/len(initial_population)) # count how many triploids in each generation
-            freq_tetraploid.append(sum(1 for individual in new_pop if len(individual) == 4)/len(initial_population)) # count how many tetraploids in each generation
+            freq_diploid.append(sum(1 for individual in new_pop if len(individual) == 2)/len(new_pop)) # count how many diploids in each generation
+            freq_triploid.append(sum(1 for individual in new_pop if len(individual) == 3)/len(new_pop)) # count how many triploids in each generation
+            freq_tetraploid.append(sum(1 for individual in new_pop if len(individual) == 4)/len(new_pop)) # count how many tetraploids in each generation
             t += 1
         diploids.append(freq_diploid)
         triploids.append(freq_triploid)
@@ -138,6 +141,6 @@ def recursive_NL_equations(max_generations,v,f,d1,d2,d3):
         x4_list.append(x4)
     return max_generations,x2_list,x3_list,x4_list
 
-x = initialize_population(100,2,2)
-makeplot(cytotype_dynamics(x,100,0.1,0.3,20),recursive_NL_equations(100,0.1,0.3,0.25,0.25,0.5))
-    
+makeplot(cytotype_dynamics(100,2,2,100,0.1,0.3,20),recursive_NL_equations(100,0.1,0.3,0.25,0.25,0.5))
+
+
