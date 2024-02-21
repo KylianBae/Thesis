@@ -62,6 +62,51 @@ def get_mean_of_freq_overreps(data,reps):
     mean_values = [(value/reps) for value in mean_values]
     return mean_values
 
+def recombination(individual, recombination_frequency = 0.3, length = 2):
+    individual = sorted(individual, key=len, reverse=True) # sort individual so first chromosome set is always longest
+    recombinated_individual = []
+    # case of 1 x 1
+    if (random.uniform(0,1) > recombination_frequency):
+        random_index = random.randint(1,length -1)
+        if len(individual[0]) == 1 and len(individual[1]) == 1:
+            chromo_1 = individual[0]
+            chromo_2 = individual[1]
+            recombinated_chromo_1 = chromo_1[0][:random_index] + chromo_2[0][random_index:]
+            recombinated_chromo_2 = chromo_2[0][:random_index] + chromo_1[0][random_index:]
+            recombinated_individual.append(recombinated_chromo_1)
+            recombinated_individual.append(recombinated_chromo_2)
+        # case of 2 x 1
+        if len(individual[0]) == 2 and len(individual[1]) == 1:
+            chromo_1 = random.choice(individual[0]) # choose 1 chromosome from first set                
+            remaining_chromo1 = [chromo for chromo in individual[0] if chromo != chromo_1][0]           
+            chromo_2 = random.choice(individual[1]) # choose 1 chromsome from other set                 
+            recombinated_chromo_1 = chromo_1[:random_index] + chromo_2[random_index:]               
+            recombinated_chromo_2 = chromo_2[:random_index] + chromo_1[random_index:]               
+            recombinated_individual.append([recombinated_chromo_1] + [remaining_chromo1])           
+            recombinated_individual.append([recombinated_chromo_2])                                   
+        # case of 2 x 2
+        if len(individual[0]) == 2 and len(individual[1]) == 2:
+            chromo_1 = random.choice(individual[0]) # choose 1 chromosome from first set                # ['A', 'A']
+            remaining_chromo1 = [chromo for chromo in individual[0] if chromo != chromo_1][0]           # ['a', 'a']
+            chromo_2 = random.choice(individual[1]) # choose 1 chromsome from other set                 # ['b', 'b']
+            remaining_chromo2 = [chromo for chromo in individual[1] if chromo != chromo_2][0]           # ['B', 'B']
+            recombinated_chromo_1 = chromo_1[:random_index] + chromo_2[random_index:]               # ['A', 'b']
+            recombinated_chromo_2 = chromo_2[:random_index] + chromo_1[random_index:]               # ['b', 'A']
+            recombinated_individual.append([recombinated_chromo_1] + [remaining_chromo1])           # [['A', 'b'],['a', 'a']]
+            recombinated_individual.append([recombinated_chromo_2] + [remaining_chromo2])           # [['b', 'A'],['B', 'B']]
+        # case of 3 x 1
+        if len(individual[0]) == 3 and len(individual[1]) == 1:
+            chromo_1 = random.choice(individual[0]) # choose 1 chromosome from first set                
+            remaining_chromo1 = [chromo for chromo in individual[0] if chromo != chromo_1]           
+            chromo_2 = random.choice(individual[1]) # choose 1 chromsome from other set                         
+            recombinated_chromo_1 = chromo_1[:random_index] + chromo_2[random_index:]               
+            recombinated_chromo_2 = chromo_2[:random_index] + chromo_1[random_index:]
+            recombinated_individual.append([recombinated_chromo_1] + remaining_chromo1)
+            recombinated_individual.append([recombinated_chromo_2])
+    else: 
+        recombinated_individual = individual
+    return recombinated_individual
+
 def cytotype_dynamics(initial_size:int,ploidy_number:int,loci_number:int,max_generations:int,v:float,f:float,reps:int):
     diploids = []
     triploids = []
