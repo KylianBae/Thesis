@@ -53,8 +53,6 @@ def meiosis(arg,v,f):
             gametes.append(poss_gametes[0])
             gametes.append(poss_gametes[1])   
     return gametes
-# and  use uniform
-
 
 def get_mean_of_freq_overreps(data,reps):
     mean_values = [0] * len(data[0])
@@ -63,7 +61,6 @@ def get_mean_of_freq_overreps(data,reps):
             mean_values[i] += value
     mean_values = [(value/reps) for value in mean_values]
     return mean_values
-# change initial to ne wpop ==> always update
 
 def cytotype_dynamics(initial_size:int,ploidy_number:int,loci_number:int,max_generations:int,v:float,f:float,reps:int):
     diploids = []
@@ -89,6 +86,7 @@ def cytotype_dynamics(initial_size:int,ploidy_number:int,loci_number:int,max_gen
             freq_triploid.append(sum(1 for individual in new_pop if len(individual) == 3)/len(new_pop)) # count how many triploids in each generation
             freq_tetraploid.append(sum(1 for individual in new_pop if len(individual) == 4)/len(new_pop)) # count how many tetraploids in each generation
             t += 1
+            new_pop = offsprings
         diploids.append(freq_diploid)
         triploids.append(freq_triploid)
         tetraploids.append(freq_tetraploid)
