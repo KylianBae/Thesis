@@ -1,6 +1,7 @@
 # Masterthesis
 import random
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 def initialize_population(initial_size:int,ploidy_number:int,loci_number:int):
     """_summary_
@@ -140,29 +141,6 @@ def cytotype_dynamics(initial_size:int,ploidy_number:int,loci_number:int,max_gen
     mean_tetraploids = get_mean_of_freq_overreps(tetraploids,reps)
     return max_generations,mean_diploids,mean_triploids,mean_tetraploids,diploids,triploids,tetraploids
 
-def makeplot(data,data2):
-    t = list(range(1,data[0]+1))
-    plt.figure(figsize=(12, 5))
-
-    plt.subplot(1,2,1)
-    plt.plot(t,data[1], label= "Frequency diploid")
-    plt.plot(t,data[2], label= "Frequency triploid")
-    plt.plot(t,data[3], label= "Frequency tetraploid")
-    plt.xlabel("Generation")
-    plt.ylabel("Frequency")
-    plt.title("Frequencies of di-,tri- and tetraploids per generation")
-    plt.legend()
-
-    plt.subplot(1,2,2)
-    plt.plot(t,data2[1], label= "Frequency diploid")
-    plt.plot(t,data2[2], label= "Frequency triploid")
-    plt.plot(t,data2[3], label= "Frequency tetraploid")
-    plt.xlabel("Generation")
-    plt.ylabel("Frequency")
-    plt.title("Frequencies of di-,tri- and tetraploids per generation")
-    plt.legend()
-    plt.show()
-
 def recursive_NL_equations(max_generations,v,f,d1,d2,d3):
     # Initial conditions
     x2 = 1  # represent frequencies of diploid
@@ -186,6 +164,29 @@ def recursive_NL_equations(max_generations,v,f,d1,d2,d3):
         x4_list.append(x4)
     return max_generations,x2_list,x3_list,x4_list
 
-makeplot(cytotype_dynamics(100,2,2,max_generations=100,v=0.01,f=0.3,reps=1000),recursive_NL_equations(max_generations=100,v=0.01,f=0.3,d1=0.25,d2=0.25,d3=0.5))
+#makeplot(cytotype_dynamics(100,2,2,max_generations=100,v=0.01,f=0.3,reps=1000),recursive_NL_equations(max_generations=100,v=0.01,f=0.3,d1=0.25,d2=0.25,d3=0.5))
 
+def plot_line(inp,title):
+    x_values =  list(range(1,inp[0]+1))
+    diploid_values = inp[1]
+    triploid_values = inp[2]
+    tetraploid_values = inp[3]
+    # Create a line plot using seaborn
+    sns.set(style="whitegrid")  # Set the style of the plot
 
+    # Create a line plot
+    sns.lineplot(x=x_values, y=diploid_values)
+    sns.lineplot(x=x_values, y=triploid_values)
+    sns.lineplot(x=x_values, y=tetraploid_values)
+
+    # Set labels and title
+    plt.xlabel("Generation")
+    plt.ylabel("Frequency")
+    plt.title(title)
+    plt.legend()
+
+    # Show the plot
+    plt.show()
+
+#plot_line(recursive_NL_equations(max_generations=100,v=0.01,f=0.3,d1=0.25,d2=0.25,d3=0.5),"Frequencies of di-,tri- and tetraploids per generation (Eq)")
+plot_line(cytotype_dynamics(100,2,2,max_generations=100,v=0.01,f=0.3,reps=100),"Frequencies of di-,tri- and tetraploids per generation (Sim)")
