@@ -188,5 +188,5 @@ def plot_line(inp,title):
     # Show the plot
     plt.show()
 
-#plot_line(recursive_NL_equations(max_generations=100,v=0.01,f=0.3,d1=0.25,d2=0.25,d3=0.5),"Frequencies of di-,tri- and tetraploids per generation (Eq)")
+plot_line(recursive_NL_equations(max_generations=100,v=0.01,f=0.3,d1=0.25,d2=0.25,d3=0.5),"Frequencies of di-,tri- and tetraploids per generation (Eq)")
 plot_line(cytotype_dynamics(100,2,2,max_generations=100,v=0.01,f=0.3,reps=100),"Frequencies of di-,tri- and tetraploids per generation (Sim)")
