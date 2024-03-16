@@ -161,8 +161,6 @@ def recursive_NL_equations(max_generations,v,f,d1,d2,d3):
         x4_list.append(x4)
     return max_generations,x2_list,x3_list,x4_list
 
-#makeplot(cytotype_dynamics(100,2,2,max_generations=100,v=0.01,f=0.3,reps=1000),recursive_NL_equations(max_generations=100,v=0.01,f=0.3,d1=0.25,d2=0.25,d3=0.5))
-
 def plot_line(inp,title):
     x_values =  list(range(1,inp[0]+1))
     diploid_values = inp[1]
@@ -185,5 +183,106 @@ def plot_line(inp,title):
     # Show the plot
     plt.show()
 
-#plot_line(recursive_NL_equations(max_generations=500,v=0.01,f=0.3,d1=0.25,d2=0.25,d3=0.5),"Frequencies of di-,tri- and tetraploids per generation (Eq)")
-plot_line(cytotype_dynamics(1000,2,2,max_generations=500,v=0.01,f=0.3,reps=10),"Frequencies of di-,tri- and tetraploids per generation (Sim)")
+def plot_fertility_unreduced_gametes():
+
+    def freq_fertility(fertility):
+        max_generations = 100
+        v_rates = [i * 0.001 for i in range(0, 251)]
+        Eq_freq_2,Eq_freq_3,Eq_freq_4 = [],[],[]
+        for i in v_rates:
+            x = recursive_NL_equations(max_generations=max_generations,v=i,f=fertility,d1=0.25,d2=0.25,d3=0.5)
+            Eq_freq_2.append(x[1][-1])
+            Eq_freq_3.append(x[2][-1])
+            Eq_freq_4.append(x[3][-1])
+        return [Eq_freq_2,Eq_freq_3,Eq_freq_4]
+
+    def plot_line(x_values,inp,inp1,inp2,inp3,inp4):
+        diploid_values = inp[0]
+        triploid_values = inp[1]
+        tetraploid_values = inp[2]
+
+        diploid_values1 = inp1[0]
+        triploid_values1 = inp1[1]
+        tetraploid_values1 = inp1[2]
+
+        diploid_values2 = inp2[0]
+        triploid_values2 = inp2[1]
+        tetraploid_values2 = inp2[2]
+
+        diploid_values3 = inp3[0]
+        triploid_values3 = inp3[1]
+        tetraploid_values3 = inp3[2]
+
+        diploid_values4 = inp4[0]
+        triploid_values4 = inp4[1]
+        tetraploid_values4 = inp4[2]
+        # Create a line plot using seaborn
+        sns.set(style="whitegrid")  # Set the style of the plot
+
+        # Create a line plot
+        sns.lineplot(x=x_values, y=diploid_values, color='red')
+        sns.lineplot(x=x_values, y=triploid_values, color='green')
+        sns.lineplot(x=x_values, y=tetraploid_values, color='blue')
+
+        sns.lineplot(x=x_values, y=diploid_values1, color='red')
+        sns.lineplot(x=x_values, y=triploid_values1, color='green')
+        sns.lineplot(x=x_values, y=tetraploid_values1,color='blue')
+
+        sns.lineplot(x=x_values, y=diploid_values2, color='red')
+        sns.lineplot(x=x_values, y=triploid_values2, color='green')
+        sns.lineplot(x=x_values, y=tetraploid_values2,color='blue')
+
+        sns.lineplot(x=x_values, y=diploid_values3, color='red')
+        sns.lineplot(x=x_values, y=triploid_values3, color='green')
+        sns.lineplot(x=x_values, y=tetraploid_values3,color='blue')
+
+        sns.lineplot(x=x_values, y=diploid_values4, color='red')
+        sns.lineplot(x=x_values, y=triploid_values4, color='green')
+        sns.lineplot(x=x_values, y=tetraploid_values4,color='blue')
+
+        # Set labels and title
+        plt.xlabel("Probability of unreduced gametes v")
+        plt.ylabel(" Equilibrium Frequency")
+        plt.yticks([0, 0.25, 0.5, 0.75, 1])
+        plt.legend()
+
+        # Show the plot
+        plt.show()
+
+    v_rates = [i * 0.001 for i in range(0, 251)]
+    inp = freq_fertility(0)
+    inp1 = freq_fertility(0.1)
+    inp2 = freq_fertility(0.2)
+    inp3 = freq_fertility(0.3)
+    inp4 = freq_fertility(0.4)
+
+    plot_line(v_rates,inp,inp1,inp2,inp3,inp4)
+def cytotypespecific_frequencies_di_tri_tetraploid(data_simulation,data_equations):
+    t = list(range(1,data_simulation[0]+1))
+    t2 = list(range(1,data_equations[0]+1))
+
+    fig,axes = plt.subplots(3,1,sharex=True)
+    fig.suptitle("Cytotype-specific dynamics")
+
+    # Diploid
+    for rep in data_simulation[4]:
+        sns.scatterplot(ax= axes[0],x=t, y=rep, color="red")
+    sns.lineplot(ax= axes[0],x=t2, y=data_equations[1], color= "black")
+    plt.ylim(0.6, 1)
+
+    # Triploid
+    for rep in data_simulation[5]:
+        sns.scatterplot(ax= axes[1], x=t, y=rep, color="green")
+    sns.lineplot(ax= axes[1], x=t2, y=data_equations[2], color= "black")
+    plt.ylim(0, 0.4)
+
+    # Tetraploid 
+    for rep in data_simulation[6]:
+        sns.scatterplot(ax= axes[2], x=t, y=rep, color="blue")
+    sns.lineplot(ax= axes[2], x=t2, y=data_equations[3], color= "black")
+    plt.ylim(0, 0.2)
+
+    plt.show()
+
+cytotypespecific_frequencies_di_tri_tetraploid(cytotype_dynamics(100,2,2,max_generations=500,v=0.01,f=0.3,reps=10),recursive_NL_equations(max_generations=500,v=0.01,f=0.3,d1=0.25,d2=0.25,d3=0.5))
+
