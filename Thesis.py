@@ -2,6 +2,7 @@
 import random
 import matplotlib.pyplot as plt
 import seaborn as sns
+import numpy as np
 
 def initialize_population(initial_size:int,ploidy_number:int,loci_number:int):
     """_summary_
@@ -190,7 +191,8 @@ def plot_fertility_unreduced_gametes():
         v_rates = [i * 0.001 for i in range(0, 251)]
         Eq_freq_2,Eq_freq_3,Eq_freq_4 = [],[],[]
         for i in v_rates:
-            x = recursive_NL_equations(max_generations=max_generations,v=i,f=fertility,d1=0.25,d2=0.25,d3=0.5)
+            #x = recursive_NL_equations(max_generations=max_generations,v=i,f=fertility,d1=0.25,d2=0.25,d3=0.5) # with triploid gametes
+            x = recursive_NL_equations(max_generations=max_generations,v=i,f=fertility,d1=0.5,d2=0.5,d3=0)  # without triploid gametes
             Eq_freq_2.append(x[1][-1])
             Eq_freq_3.append(x[2][-1])
             Eq_freq_4.append(x[3][-1])
@@ -257,6 +259,7 @@ def plot_fertility_unreduced_gametes():
     inp4 = freq_fertility(0.4)
 
     plot_line(v_rates,inp,inp1,inp2,inp3,inp4)
+
 def cytotypespecific_frequencies_di_tri_tetraploid(data_simulation,data_equations):
     t = list(range(1,data_simulation[0]+1))
     t2 = list(range(1,data_equations[0]+1))
@@ -284,5 +287,40 @@ def cytotypespecific_frequencies_di_tri_tetraploid(data_simulation,data_equation
 
     plt.show()
 
-cytotypespecific_frequencies_di_tri_tetraploid(cytotype_dynamics(100,2,2,max_generations=500,v=0.01,f=0.3,reps=10),recursive_NL_equations(max_generations=500,v=0.01,f=0.3,d1=0.25,d2=0.25,d3=0.5))
+def phase_portrait(f= 0.3,v1=0.01,v3=0.03,v5=0.05,v10=0.06):
+    # haploid gamete frequency: 2g^2(2-v-2f) + g(-3+3v+3f) + (1-v-f) = 0         
+    # change in frequency: x * (4 - 2 * v - 4 * f) + (-3 + 3 * v1 + 3 * f)           
+    # see manuscript 
+    x = np.linspace(0,1.5,100)
+    y1 = x**2 * (- v1- 2 * f) + x * (-3 + 3 * v1 + 3 * f) + (1 - v1 - f) 
+    y3 = x**2 * (- v3 - 2 * f) + x * (-3 + 3 * v3 + 3 * f) + (1 - v3 - f)
+    y5 = x**2 * (- v5 - 2 * f) + x * (-3 + 3 * v5 + 3 * f) + (1 - v5 - f)
+    y10 = x**2 * (- v10 - 2 * f) + x * (-3 + 3 * v10 + 3 * f) + (1 - v1 - f)
+    x_axis = 0 * x
+    # Create a line plot using seaborn
+    sns.set(style="whitegrid")  # Set the style of the plot
 
+    # Create a line plot
+    sns.lineplot(x=x, y=y1,label=f"v = {v1}")
+    sns.lineplot(x=x, y=y3,label=f"v = {v3}")
+    sns.lineplot(x=x, y=y5,label=f"v = {v5}")
+    sns.lineplot(x=x, y=y10,label=f"v = {v10}")
+    sns.lineplot(x=x, y=x_axis, color="black")
+
+    # Set labels and title
+    plt.xlabel("Haploid gamete frequency")
+    plt.ylabel("Rate of haploid gamete frequency change")
+    plt.title("Phase portrait of haploid gamete frequency")
+    plt.legend()
+    #plt.ylim(-0.1, 0.1)
+    # Show the plot
+    plt.show()
+
+# figure 2
+plot_fertility_unreduced_gametes()
+
+# figure 3
+#phase_portrait() 
+    
+#Figure 4
+#cytotypespecific_frequencies_di_tri_tetraploid(cytotype_dynamics(500,2,2,max_generations=500,v=0.01,f=0,reps=10),recursive_NL_equations(max_generations=500,v=0.01,f=0,d1=0.25,d2=0.25,d3=0.5))
