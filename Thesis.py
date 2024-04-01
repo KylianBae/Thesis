@@ -292,10 +292,10 @@ def phase_portrait(f= 0.3,v1=0.01,v3=0.03,v5=0.05,v10=0.06):
     # change in frequency: x * (4 - 2 * v - 4 * f) + (-3 + 3 * v1 + 3 * f)           
     # see manuscript 
     x = np.linspace(0,1.5,100)
-    y1 = x**2 * (- v1- 2 * f) + x * (-3 + 3 * v1 + 3 * f) + (1 - v1 - f) 
-    y3 = x**2 * (- v3 - 2 * f) + x * (-3 + 3 * v3 + 3 * f) + (1 - v3 - f)
-    y5 = x**2 * (- v5 - 2 * f) + x * (-3 + 3 * v5 + 3 * f) + (1 - v5 - f)
-    y10 = x**2 * (- v10 - 2 * f) + x * (-3 + 3 * v10 + 3 * f) + (1 - v1 - f)
+    y1 = x**2 * (2 - v1 - 2 * f) + x * (3 * v1 + 3 * f - 3) + (1 - v1 - f) 
+    y3 = x**2 * (2 - v3 - 2 * f) + x * (3 * v3 + 3 * f - 3) + (1 - v3 - f)
+    y5 = x**2 * (2 - v5 - 2 * f) + x * (3 * v5 + 3 * f - 3) + (1 - v5 - f)
+    y10 = x**2 * ( 2- v10 - 2 * f) + x * (3 * v10 + 3 * f - 3) + (1 - v1 - f)
     x_axis = 0 * x
     # Create a line plot using seaborn
     sns.set(style="whitegrid")  # Set the style of the plot
@@ -317,10 +317,10 @@ def phase_portrait(f= 0.3,v1=0.01,v3=0.03,v5=0.05,v10=0.06):
     plt.show()
 
 # figure 2
-plot_fertility_unreduced_gametes()
+#plot_fertility_unreduced_gametes()
 
 # figure 3
-#phase_portrait() 
+phase_portrait() 
     
 #Figure 4
 #cytotypespecific_frequencies_di_tri_tetraploid(cytotype_dynamics(500,2,2,max_generations=500,v=0.01,f=0,reps=10),recursive_NL_equations(max_generations=500,v=0.01,f=0,d1=0.25,d2=0.25,d3=0.5))
