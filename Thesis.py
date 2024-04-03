@@ -292,18 +292,18 @@ def phase_portrait(f= 0.3,v1=0.01,v3=0.03,v5=0.05,v10=0.06):
     # change in frequency: x * (4 - 2 * v - 4 * f) + (-3 + 3 * v1 + 3 * f)           
     # see manuscript 
     x = np.linspace(0,1.5,100)
-    y1 = x**2 * (2 - v1 - 2 * f) + x * (3 * v1 + 3 * f - 3) + (1 - v1 - f) 
-    y3 = x**2 * (2 - v3 - 2 * f) + x * (3 * v3 + 3 * f - 3) + (1 - v3 - f)
-    y5 = x**2 * (2 - v5 - 2 * f) + x * (3 * v5 + 3 * f - 3) + (1 - v5 - f)
-    y10 = x**2 * (2 - v10 - 2 * f) + x * (3 * v10 + 3 * f - 3) + (1 - v1 - f)
+    y1 = x**2 * (-2 + v1 + 2 * f) + x * (-3 * v1 - 3 * f + 3) + (-1 + v1 + f) 
+    #y3 = x**2 * (-2 + v3 + 2 * f) + x * (-3 * v3 - 3 * f + 3) + (-1 + v3 + f)
+    #y5 = x**2 * (-2 + v5 + 2 * f) + x * (-3 * v5 - 3 * f + 3) + (-1 + v5 + f)
+    y10 = x**2 * (-2 + v10 + 2 * f) + x * (-3 * v10 - 3 * f + 3) + (-1 + v10 + f)
     x_axis = 0 * x
     # Create a line plot using seaborn
     sns.set(style="whitegrid")  # Set the style of the plot
 
     # Create a line plot
     sns.lineplot(x=x, y=y1,label=f"v = {v1}")
-    sns.lineplot(x=x, y=y3,label=f"v = {v3}")
-    sns.lineplot(x=x, y=y5,label=f"v = {v5}")
+    #sns.lineplot(x=x, y=y3,label=f"v = {v3}")
+    #sns.lineplot(x=x, y=y5,label=f"v = {v5}")
     sns.lineplot(x=x, y=y10,label=f"v = {v10}")
     sns.lineplot(x=x, y=x_axis, color="black")
 
