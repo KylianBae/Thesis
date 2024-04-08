@@ -287,12 +287,14 @@ def cytotype_dynamics(initial_size:int,ploidy_number:int,loci_number:int,max_gen
     diploids = []
     triploids = []
     tetraploids = []
+    population_per_generation_per_rep = []
     for i in range(0,reps):
         initial_population = initialize_population(initial_size,loci_number,ploidy_number) # na each rep opnieuw initialpop opstarten ==> dus een nieuwe onafhankelijke trials
         t = 1
         n = len(initial_population)
         freq_diploid, freq_triploid, freq_tetraploid = [1], [0], [0]
         new_pop = initial_population
+        population_per_generation = [initial_population]
         while t < max_generations:
             offsprings = []
             while len(offsprings) < n:
@@ -302,7 +304,6 @@ def cytotype_dynamics(initial_size:int,ploidy_number:int,loci_number:int,max_gen
                         first = meiosis(pair[0],v,f,recombination_frequency)
                         second = meiosis(pair[1],v,f,recombination_frequency)
                         if first != () and second != () and len(list(first + second)) < 5:
-                            #offspring = recombination([first] + [second])
                             offspring = list(first + second)
                             offsprings.append(offspring)
                 else:
@@ -311,8 +312,9 @@ def cytotype_dynamics(initial_size:int,ploidy_number:int,loci_number:int,max_gen
                     if first != () and second != () and len(list(first + second)) < 5:
                         #offspring = recombination([first] + [second])
                         offspring = list(first + second)
-                        offsprings.append(offspring)                   
+                        offsprings.append(offspring)                  
             new_pop = offsprings
+            population_per_generation.append(offsprings)
             freq_diploid.append(sum(1 for individual in new_pop if len(individual) == 2)/len(new_pop)) # count how many diploids in each generation
             freq_triploid.append(sum(1 for individual in new_pop if len(individual) == 3)/len(new_pop)) # count how many triploids in each generation
             freq_tetraploid.append(sum(1 for individual in new_pop if len(individual) == 4)/len(new_pop)) # count how many tetraploids in each generation
@@ -320,10 +322,11 @@ def cytotype_dynamics(initial_size:int,ploidy_number:int,loci_number:int,max_gen
         diploids.append(freq_diploid)
         triploids.append(freq_triploid)
         tetraploids.append(freq_tetraploid)
+        population_per_generation_per_rep.append(population_per_generation)
     mean_diploids = get_mean_of_freq_overreps(diploids,reps)
     mean_triploids = get_mean_of_freq_overreps(triploids,reps)
     mean_tetraploids = get_mean_of_freq_overreps(tetraploids,reps)
-    return max_generations,mean_diploids,mean_triploids,mean_tetraploids,diploids,triploids,tetraploids
+    return max_generations,mean_diploids,mean_triploids,mean_tetraploids,diploids,triploids,tetraploids,population_per_generation_per_rep[0]
 
 def fitness(individual1,individual2,selection_coeff=0.2,reference_fitness=0.8):
     p1, p2 = len(individual1), len(individual2)
@@ -359,12 +362,33 @@ def IBM_cytotypespecific_frequencies_di_tri_tetraploid(data_simulation):
     plt.ylim(0, 0.1)
     plt.show()
 
-large_pop = cytotype_dynamics(1000,2,2,500,0.01,0.3,10,True,0.2,0.8)
+large_pop = cytotype_dynamics(100,2,2,500,0.01,0.3,1,True)
+print(len(large_pop[-1]))
 
-cytotypespecific_frequencies_di_tri_tetraploid(large_pop,recursive_NL_equations(500,0.01,0.3,0.25,0.25,0.5))
+def allelefreq_per_generation(population_per_generation):
+    # divide per cytotype
+    diploids = []
+    triploids = []
+    tetraploids = []
+    for pop in population_per_generation:
+        for individual in pop:
+            if len(individual) == 2:
+                diploids.append(individual)
+            if len(individual) == 3:
+                triploids.append(individual)
+            if len(individual) == 4:
+                tetraploids.append(individual)
+    return diploids,tetraploids,tetraploids
+
+print(len(allelefreq_per_generation(large_pop[-1])[0]))
+            
 
 
 
+
+
+
+# Idea: Plot frequencies of each allele per generation per for each cytotype
 
 
 
@@ -376,3 +400,6 @@ cytotypespecific_frequencies_di_tri_tetraploid(large_pop,recursive_NL_equations(
     
 #Figure 4
 #cytotypespecific_frequencies_di_tri_tetraploid(cytotype_dynamics(500,2,2,max_generations=500,v=0.01,f=0,reps=10),recursive_NL_equations(max_generations=500,v=0.01,f=0,d1=0.25,d2=0.25,d3=0.5))
+
+# Figure 4 and 5
+#cytotypespecific_frequencies_di_tri_tetraploid(large_pop,recursive_NL_equations(500,0.01,0.3,0.25,0.25,0.5))
