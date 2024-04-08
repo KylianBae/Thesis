@@ -204,9 +204,9 @@ def initialize_population(initial_size:int,ploidy_number:int,loci_number:int):
         population.append(individual)
     return population
 
-def meiosis(arg,v,f):
+def meiosis(arg,v,f,recombination_frequency):
     gametes = []
-    arg = recombination(arg)
+    arg = recombination(arg,recombination_frequency)
     if len(arg) == 2:  
         chromosomes = random.choices([1,2],weights=(1-v,v),k=1) # choice for reduced or unreduced gametes
         if chromosomes[0] == 1:
@@ -283,7 +283,7 @@ def recombination(individual, recombination_frequency = 0.01, length = 2):
     recombinated_individual = individual
     return recombinated_individual
 
-def cytotype_dynamics(initial_size:int,ploidy_number:int,loci_number:int,max_generations:int,v:float,f:float,reps:int,apply_fitness=True):
+def cytotype_dynamics(initial_size:int,ploidy_number:int,loci_number:int,max_generations:int,v:float,f:float,reps:int,apply_fitness=True,selection_coeff=0.2,reference_fitness=0.8, recombination_frequency=0.01):
     diploids = []
     triploids = []
     tetraploids = []
@@ -298,16 +298,16 @@ def cytotype_dynamics(initial_size:int,ploidy_number:int,loci_number:int,max_gen
             while len(offsprings) < n:
                 pair = random.sample(new_pop,2)
                 if apply_fitness:
-                    if fitness(pair[0],pair[1]) == True:
-                        first = meiosis(pair[0],v,f)
-                        second = meiosis(pair[1],v,f)
+                    if fitness(pair[0],pair[1],selection_coeff=0.2,reference_fitness=0.8) == True:
+                        first = meiosis(pair[0],v,f,recombination_frequency)
+                        second = meiosis(pair[1],v,f,recombination_frequency)
                         if first != () and second != () and len(list(first + second)) < 5:
                             #offspring = recombination([first] + [second])
                             offspring = list(first + second)
                             offsprings.append(offspring)
                 else:
-                    first = meiosis(pair[0],v,f)
-                    second = meiosis(pair[1],v,f)
+                    first = meiosis(pair[0],v,f,recombination_frequency)
+                    second = meiosis(pair[1],v,f,recombination_frequency)
                     if first != () and second != () and len(list(first + second)) < 5:
                         #offspring = recombination([first] + [second])
                         offspring = list(first + second)
@@ -344,6 +344,7 @@ def IBM_cytotypespecific_frequencies_di_tri_tetraploid(data_simulation):
     t = list(range(1,data_simulation[0]+1))
     fig,axes = plt.subplots(3,1,sharex=True)
     fig.suptitle("Cytotype-specific dynamics")
+    axes.set(xlabel='Generations', ylabel='Frequency')
     # Diploid
     for rep in data_simulation[4]:
         sns.scatterplot(ax= axes[0],x=t, y=rep, color="red")
@@ -358,9 +359,7 @@ def IBM_cytotypespecific_frequencies_di_tri_tetraploid(data_simulation):
     plt.ylim(0, 0.1)
     plt.show()
 
-large_pop = cytotype_dynamics(1000,2,2,500,0.01,0.3,10)
-med_pop = cytotype_dynamics(500,2,2,500,0.01,0.3,10)
-small_pop = cytotype_dynamics(100,2,2,500,0.01,0.3,10)
+large_pop = cytotype_dynamics(1000,2,2,500,0.01,0.3,10,True,0.2,0.8)
 
 cytotypespecific_frequencies_di_tri_tetraploid(large_pop,recursive_NL_equations(500,0.01,0.3,0.25,0.25,0.5))
 
