@@ -242,6 +242,15 @@ def get_mean_of_freq_overreps(data,reps):
     mean_values = [(value/reps) for value in mean_values]
     return mean_values
 
+def get_mean_of_freq_overreps_counts(data,reps):
+    mean_values = [0] * len(data[0])
+    for rep in data:
+        for i, value in enumerate(rep):
+            print(f'x{i,value}')
+            mean_values[i] += value
+    mean_values = [(value/reps) for value in mean_values]
+    return mean_values
+
 def recombination(individual, recombination_frequency = 0.01, length = 2):
     individual = sorted(individual, key=len, reverse=True) # sort individual so first chromosome set is always longest
     # case of 2 gametes
@@ -326,7 +335,7 @@ def cytotype_dynamics(initial_size:int,ploidy_number:int,loci_number:int,max_gen
     mean_diploids = get_mean_of_freq_overreps(diploids,reps)
     mean_triploids = get_mean_of_freq_overreps(triploids,reps)
     mean_tetraploids = get_mean_of_freq_overreps(tetraploids,reps)
-    return max_generations,mean_diploids,mean_triploids,mean_tetraploids,diploids,triploids,tetraploids,population_per_generation_per_rep[0]
+    return max_generations,mean_diploids,mean_triploids,mean_tetraploids,diploids,triploids,tetraploids,population_per_generation_per_rep
 
 def fitness(individual1,individual2,selection_coeff=0.2,reference_fitness=0.8):
     p1, p2 = len(individual1), len(individual2)
@@ -343,45 +352,122 @@ def fitness(individual1,individual2,selection_coeff=0.2,reference_fitness=0.8):
     else:
         return True
 
-def IBM_cytotypespecific_frequencies_di_tri_tetraploid(data_simulation):
-    t = list(range(1,data_simulation[0]+1))
-    fig,axes = plt.subplots(3,1,sharex=True)
-    fig.suptitle("Cytotype-specific dynamics")
-    axes.set(xlabel='Generations', ylabel='Frequency')
-    # Diploid
-    for rep in data_simulation[4]:
-        sns.scatterplot(ax= axes[0],x=t, y=rep, color="red")
-    plt.ylim(0, 1)
-    # Triploid
-    for rep in data_simulation[5]:
-        sns.scatterplot(ax= axes[1], x=t, y=rep, color="green")
-    plt.ylim(0, 0.8)
-    # Tetraploid 
-    for rep in data_simulation[6]:
-        sns.scatterplot(ax= axes[2], x=t, y=rep, color="blue")
-    plt.ylim(0, 0.1)
+large_pop = cytotype_dynamics(5,2,2,4,0.01,0.3,2,True)
+
+def allelefreq_per_generation_average_cytotypespecific(population_per_generation_per_rep, ploidy_level):
+    average_A = []
+    average_a = []
+    average_B = []
+    average_b = []
+    for rep in population_per_generation_per_rep:  # Loop over each individual repetition
+        freq_A = []
+        freq_a = []
+        freq_B = []
+        freq_b = []
+        for gen_pop in rep: # loop over every generation in each repetition
+            count_A = []
+            count_a = []
+            count_B = []
+            count_b = []
+            cytotype_specific = []
+            for individual in gen_pop:
+                if len(individual) == ploidy_level: # select only the cytotype of interest
+                    cytotype_specific.append(individual)
+            for gen in cytotype_specific:                     # count the number of each specific allele present per generation in the specific cytotype
+                gen = [element for sublist in gen for element in sublist]
+                gen = [element for sublist in gen for element in sublist]
+                count_A.append(gen.count("A"))
+                count_a.append(gen.count("a"))
+                count_B.append(gen.count("B"))
+                count_b.append(gen.count("b"))
+            freq_A.append(sum(count_A))
+            freq_a.append(count_a)
+            freq_B.append(count_B)
+            freq_b.append(count_b)
+        average_A.append(freq_A)
+        average_a.append(freq_a)
+        average_B.append(freq_B)
+        average_b.append(freq_b)
+    print(f"Input:{average_A}")
+    average_A = get_mean_of_freq_overreps_counts(average_A,len(population_per_generation_per_rep))
+    average_a = get_mean_of_freq_overreps_counts(average_a,len(population_per_generation_per_rep))
+    average_B = get_mean_of_freq_overreps_counts(average_B,len(population_per_generation_per_rep))
+    average_b = get_mean_of_freq_overreps_counts(average_b,len(population_per_generation_per_rep))
+    
+    generations = list(range(1,len(population_per_generation_per_rep[0]) + 1))
+    fig= plt.figure()
+    fig.suptitle("Allele frequencies per cytotype")
+    sns.lineplot(x=generations, y=average_A, color="red")
+    sns.lineplot(x=generations, y=average_a, color="blue")
+    sns.lineplot(x=generations, y=average_B, color="green")
+    sns.lineplot(x=generations, y=average_b, color="yellow")
+
     plt.show()
+# divide per cytotype
+    for population_per_generation in population_per_generation_per_rep:
+        diploids=[]
+        triploids=[]
+        tetraploids= []
+        for pop in population_per_generation:
+            diploids_gen = []
+            triploids_gen = []
+            tetraploids_gen = []
+            for individual in pop:
+                if len(individual) == 2:
+                    diploids_gen.append(individual)
+                if len(individual) == 3:
+                    triploids_gen.append(individual)
+                if len(individual) == 4:
+                    tetraploids_gen.append(individual)
+            diploids.append(diploids_gen)
+            triploids.append(triploids_gen)
+            tetraploids.append(tetraploids_gen)
+        # count "A" "a" "B" "b" and plot frequency per generation
+        #  MAKE MORE PYTHONIC
+        # Diploids
+            dcount_A = []
+            dcount_a = []
+            dcount_B = []
+            dcount_b = []
+        for gen in diploids:
+            gen = [element for sublist in gen for element in sublist]
+            gen = [element for sublist in gen for element in sublist]
+            dcount_A.append(gen.count("A"))
+            dcount_a.append(gen.count("a"))
+            dcount_B.append(gen.count("B"))
+            dcount_b.append(gen.count("b"))
+        # triloids
+            tcount_A = []
+            tcount_a = []
+            tcount_B = []
+            tcount_b = []
+        for gen in triploids:
+            gen = [element for sublist in gen for element in sublist]
+            gen = [element for sublist in gen for element in sublist]
+            tcount_A.append(gen.count("A"))
+            tcount_a.append(gen.count("a"))
+            tcount_B.append(gen.count("B"))
+            tcount_b.append(gen.count("b"))
+        # tetraploids
+            tecount_A = []
+            tecount_a = []
+            tecount_B = []
+            tecount_b = []
+        for gen in tetraploids:
+            gen = [element for sublist in gen for element in sublist]
+            gen = [element for sublist in gen for element in sublist]
+            tecount_A.append(gen.count("A"))
+            tecount_a.append(gen.count("a"))
+            tecount_B.append(gen.count("B"))
+            tecount_b.append(gen.count("b"))
+    
 
-large_pop = cytotype_dynamics(100,2,2,500,0.01,0.3,1,True)
-print(len(large_pop[-1]))
+    return dcount_A
+# check if works for multiple repeitions plus check in graph with all 3 cytotypes together
+# allele B seems to dominate?
 
-def allelefreq_per_generation(population_per_generation):
-    # divide per cytotype
-    diploids = []
-    triploids = []
-    tetraploids = []
-    for pop in population_per_generation:
-        for individual in pop:
-            if len(individual) == 2:
-                diploids.append(individual)
-            if len(individual) == 3:
-                triploids.append(individual)
-            if len(individual) == 4:
-                tetraploids.append(individual)
-    return diploids,tetraploids,tetraploids
-
-print(len(allelefreq_per_generation(large_pop[-1])[0]))
-            
+allelefreq_per_generation_average_cytotypespecific(large_pop[-1],2)
+          
 
 
 
