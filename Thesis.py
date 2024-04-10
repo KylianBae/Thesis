@@ -352,9 +352,9 @@ def fitness(individual1,individual2,selection_coeff=0.2,reference_fitness=0.8):
     else:
         return True
 
-large_pop = cytotype_dynamics(1000,2,2,500,0.01,0.3,100,True)
+large_pop = cytotype_dynamics(1000,2,2,500,0.01,0.3,10,True)
 
-def allelefreq_per_generation_average_cytotypespecific(population_per_generation_per_rep, ploidy_level):
+def allelefreq_per_generation_average_cytotypespecific(population_per_generation_per_rep, ploidy_level, freq=True):
     average_A = []
     average_a = []
     average_B = []
@@ -380,17 +380,23 @@ def allelefreq_per_generation_average_cytotypespecific(population_per_generation
                 count_a.append(gen.count("a"))
                 count_B.append(gen.count("B"))
                 count_b.append(gen.count("b"))
-            amount_of_alleles = int(sum(count_A) + sum(count_a) + sum(count_B) + sum(count_b))
-            if amount_of_alleles != 0: 
-                freq_A.append(sum(count_A)/amount_of_alleles)
-                freq_a.append(sum(count_a)/amount_of_alleles)
-                freq_B.append(sum(count_B)/amount_of_alleles)
-                freq_b.append(sum(count_b)/amount_of_alleles)
+            if freq == True:
+                amount_of_alleles = int(sum(count_A) + sum(count_a) + sum(count_B) + sum(count_b))
+                if amount_of_alleles != 0: 
+                    freq_A.append(sum(count_A)/amount_of_alleles)
+                    freq_a.append(sum(count_a)/amount_of_alleles)
+                    freq_B.append(sum(count_B)/amount_of_alleles)
+                    freq_b.append(sum(count_b)/amount_of_alleles)
+                else:
+                    freq_A.append(0)
+                    freq_a.append(0)
+                    freq_B.append(0)
+                    freq_b.append(0)
             else:
-                freq_A.append(0)
-                freq_a.append(0)
-                freq_B.append(0)
-                freq_b.append(0)
+                freq_A.append(sum(count_A))
+                freq_a.append(sum(count_a))
+                freq_B.append(sum(count_B))
+                freq_b.append(sum(count_b))
         average_A.append(freq_A)
         average_a.append(freq_a)
         average_B.append(freq_B)
@@ -406,13 +412,14 @@ def allelefreq_per_generation_average_cytotypespecific(population_per_generation
     sns.lineplot(x=generations, y=average_a, color="blue")
     sns.lineplot(x=generations, y=average_B, color="green")
     sns.lineplot(x=generations, y=average_b, color="yellow")
-    plt.ylim(0,1)
+    if freq == True:
+        plt.ylim(0,1)
     plt.show()
 
 # check if works for multiple repeitions plus check in graph with all 3 cytotypes together
 # allele B seems to dominate?
 
-allelefreq_per_generation_average_cytotypespecific(large_pop[-1],4)
+allelefreq_per_generation_average_cytotypespecific(large_pop[-1],4,False)
           
 
 
