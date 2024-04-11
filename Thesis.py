@@ -352,7 +352,7 @@ def fitness(individual1,individual2,selection_coeff=0.2,reference_fitness=0.8):
     else:
         return True
 
-large_pop = cytotype_dynamics(1000,2,2,500,0.01,0.3,10,True)
+large_pop = cytotype_dynamics(1000,2,2,500,0.01,0.3,100,True)
 
 def allelefreq_per_generation_average_cytotypespecific(population_per_generation_per_rep, ploidy_level, freq=True):
     average_A = []
@@ -419,7 +419,7 @@ def allelefreq_per_generation_average_cytotypespecific(population_per_generation
 # check if works for multiple repeitions plus check in graph with all 3 cytotypes together
 # allele B seems to dominate?
 
-allelefreq_per_generation_average_cytotypespecific(large_pop[-1],4,False)
+allelefreq_per_generation_average_cytotypespecific(large_pop[-1],3,False)
           
 
 
