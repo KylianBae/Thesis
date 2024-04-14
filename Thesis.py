@@ -184,7 +184,8 @@ def phase_portrait(f= 0.3,v1=0.01,v3=0.07,v5=0.05,v10=0.14):
 def initialize_population(initial_size:int,ploidy_number:int,loci_number:int):
     """_summary_
     Initialize the starting population with a given number of individuals of the population (initial_size), with its ploidy level(ploidy_number)
-    and number of loci per chromosome (loci_number)
+    and number of loci per chromosome (loci_number). In this case 2 alleles exist for each loci. The population will be started to exist completely 
+    of heterzygote individuals.
     Args:
         initial_size (int): Size of the initial population of individuals to start with
         ploidy_number (int): Number of chromosome sets per individual
@@ -194,14 +195,16 @@ def initialize_population(initial_size:int,ploidy_number:int,loci_number:int):
         List of lists which represents the population with its individuals based on the given parameters
     """
     population = []
-    for i in range(0, initial_size):
+    while len(population) < initial_size:
         individual = []
         for i in range(0, ploidy_number):
             chromosome_set = []
             chromosome_set.append(random.choice(["A","a"]))
             chromosome_set.append(random.choice(["B","b"]))
             individual.append(chromosome_set)
-        population.append(individual)
+        Heterozygous_possibilities = [[["A","B"],["a","b"]],[["a","b"],["A","B"]],[["A","b"],["a","B"]],[["a","B"],["A","b"]]]
+        if individual in Heterozygous_possibilities:
+            population.append(individual)
     return population
 
 def meiosis(arg,v,f,recombination_frequency):
@@ -347,12 +350,10 @@ def fitness(individual1,individual2,selection_coeff=0.2,reference_fitness=0.8):
     random_n1,random_n2 = random.uniform(0,1),random.uniform(0,1)
     scores = [fitness_score1,fitness_score2]
     random_n = [random_n1,random_n2]
-    if min(random_n) < min(scores):
-        return False
-    else:
+    if max(random_n) < min(scores):
         return True
-
-large_pop = cytotype_dynamics(1000,2,2,500,0.01,0.3,100,True)
+    else:
+        return False
 
 def allelefreq_per_generation_average_cytotypespecific(population_per_generation_per_rep, ploidy_level, freq=True):
     average_A = []
@@ -416,20 +417,6 @@ def allelefreq_per_generation_average_cytotypespecific(population_per_generation
         plt.ylim(0,1)
     plt.show()
 
-# check if works for multiple repeitions plus check in graph with all 3 cytotypes together
-# allele B seems to dominate?
-
-allelefreq_per_generation_average_cytotypespecific(large_pop[-1],3,False)
-          
-
-
-
-
-
-
-# Idea: Plot frequencies of each allele per generation per for each cytotype
-
-
 
 # figure 2
 #plot_fertility_unreduced_gametes()
@@ -438,7 +425,30 @@ allelefreq_per_generation_average_cytotypespecific(large_pop[-1],3,False)
 #phase_portrait() 
     
 #Figure 4
-#cytotypespecific_frequencies_di_tri_tetraploid(cytotype_dynamics(500,2,2,max_generations=500,v=0.01,f=0,reps=10),recursive_NL_equations(max_generations=500,v=0.01,f=0,d1=0.25,d2=0.25,d3=0.5))
+#cytotypespecific_frequencies_di_tri_tetraploid(cytotype_dynamics(500,2,2,max_generations=500,v=0.01,f=0,reps=10,apply_fitness=False),recursive_NL_equations(max_generations=500,v=0.01,f=0,d1=0.25,d2=0.25,d3=0.5))
 
 # Figure 4 and 5
+#large_pop = cytotype_dynamics(1000,2,2,500,0.01,0.3,30,True)
 #cytotypespecific_frequencies_di_tri_tetraploid(large_pop,recursive_NL_equations(500,0.01,0.3,0.25,0.25,0.5))
+
+# Figure 7 Check allele count and frequencies in each cytotype
+large_pop = cytotype_dynamics(10,2,2,5,0.01,0.3,3,True)
+#allelefreq_per_generation_average_cytotypespecific(large_pop[-1],2,False)
+
+# Figure 8
+def fitness_of_population(population_per_generations_per_rep, reference_fitness, selection_coeff):
+    mean_fitness_of_population_over_reps = []
+    for rep in population_per_generations_per_rep: # loop over each repetition
+        score_per_generation = [] 
+        for pop_per_generation in rep: # loop over all generations which contain the population in each generation
+            mean_score_per_population = []
+            for individual in pop_per_generation:
+                All_alleles_ind = [element for sublist in individual for element in sublist]
+                fitness_score = reference_fitness + ((All_alleles_ind.count("A")/len(individual)) * selection_coeff) - ((All_alleles_ind.count("B")/len(individual)) * selection_coeff)
+                mean_score_per_population.append(fitness_score)
+            mean_score_per_population = sum(mean_score_per_population)/len(pop_per_generation)
+    mean_fitness_of_population_over_reps = get_mean_of_freq_overreps_counts()
+                    
+           
+
+print(fitness_of_population(large_pop[-1]))
