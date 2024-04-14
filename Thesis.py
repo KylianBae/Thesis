@@ -432,12 +432,12 @@ def allelefreq_per_generation_average_cytotypespecific(population_per_generation
 #cytotypespecific_frequencies_di_tri_tetraploid(large_pop,recursive_NL_equations(500,0.01,0.3,0.25,0.25,0.5))
 
 # Figure 7 Check allele count and frequencies in each cytotype
-large_pop = cytotype_dynamics(10,2,2,5,0.01,0.3,3,True)
+large_pop = cytotype_dynamics(1000,2,2,500,0.01,0.3,30,True)
 #allelefreq_per_generation_average_cytotypespecific(large_pop[-1],2,False)
 
 # Figure 8
 def fitness_of_population(population_per_generations_per_rep, reference_fitness, selection_coeff):
-    mean_fitness_of_population_over_reps = []
+    scores_per_rep = []
     for rep in population_per_generations_per_rep: # loop over each repetition
         score_per_generation = [] 
         for pop_per_generation in rep: # loop over all generations which contain the population in each generation
@@ -447,8 +447,16 @@ def fitness_of_population(population_per_generations_per_rep, reference_fitness,
                 fitness_score = reference_fitness + ((All_alleles_ind.count("A")/len(individual)) * selection_coeff) - ((All_alleles_ind.count("B")/len(individual)) * selection_coeff)
                 mean_score_per_population.append(fitness_score)
             mean_score_per_population = sum(mean_score_per_population)/len(pop_per_generation)
-    mean_fitness_of_population_over_reps = get_mean_of_freq_overreps_counts()
-                    
-           
+            score_per_generation.append(mean_score_per_population)
+        scores_per_rep.append(score_per_generation)
+    mean_fitness_of_population_over_reps = get_mean_of_freq_overreps_counts(scores_per_rep,len(scores_per_rep))
+    return mean_fitness_of_population_over_reps
 
-print(fitness_of_population(large_pop[-1]))
+def plot_fitness_vs_gen(fitness_per_generation):
+    generations = list(range(1,len(fitness_per_generation)+1))
+    fig= plt.figure()
+    fig.suptitle("Population fitness per generation")
+    sns.lineplot(x=generations, y=fitness_per_generation, color="red")
+    plt.show()
+
+plot_fitness_vs_gen(fitness_of_population(cytotype_dynamics(1000,2,2,500,0.01,0.3,30,True,recombination_frequency=0.1)[-1],0.8,0.2))
