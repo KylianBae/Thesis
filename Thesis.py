@@ -432,8 +432,8 @@ def allelefreq_per_generation_average_cytotypespecific(population_per_generation
 #cytotypespecific_frequencies_di_tri_tetraploid(large_pop,recursive_NL_equations(500,0.01,0.3,0.25,0.25,0.5))
 
 # Figure 7 Check allele count and frequencies in each cytotype
-large_pop = cytotype_dynamics(1000,2,2,500,0.01,0.3,30,True)
-#allelefreq_per_generation_average_cytotypespecific(large_pop[-1],2,False)
+#large_pop = cytotype_dynamics(1000,2,2,500,0,0.3,30,True)
+#allelefreq_per_generation_average_cytotypespecific(large_pop[-1],3,True)
 
 # Figure 8
 def fitness_of_population(population_per_generations_per_rep, reference_fitness, selection_coeff):
@@ -457,6 +457,8 @@ def plot_fitness_vs_gen(fitness_per_generation):
     fig= plt.figure()
     fig.suptitle("Population fitness per generation")
     sns.lineplot(x=generations, y=fitness_per_generation, color="red")
+    plt.ylim(0.8,1)
     plt.show()
 
-plot_fitness_vs_gen(fitness_of_population(cytotype_dynamics(1000,2,2,500,0.01,0.3,30,True,recombination_frequency=0.1)[-1],0.8,0.2))
+plot_fitness_vs_gen(fitness_of_population(cytotype_dynamics(1000,2,2,500,0,0.3,30,True,recombination_frequency=0.1)[-1],0.8,0.2))
+# area unbder curve statistic for quantitative?
