@@ -538,15 +538,15 @@ def buffer_experiment():
     di_generation_nmutations_coordinates = []
     for i in range(1,1001):
         di_generation_nmutations_coordinates.append(cytotype_dynamics_buffer_experiment(1000,2,2,500,0.01,0.3,1,True,0.2,0.8,0.01,0,i))
-        print(f"Mutations: {i}")
+        print(f"Mutations di: {i}")
     tri_generation_nmutations_coordinates = []
     for i in range(1,1001):
         tri_generation_nmutations_coordinates.append(cytotype_dynamics_buffer_experiment(1000,2,2,500,0.01,0.3,1,True,0.2,0.8,0.01,5,i))
-        print(f"Mutations: {i}")
+        print(f"Mutations tri: {i}")
     tetra_generation_nmutations_coordinates = []
     for i in range(1,1001):
         tetra_generation_nmutations_coordinates.append(cytotype_dynamics_buffer_experiment(1000,2,2,500,0.01,0.3,1,True,0.2,0.8,0.01,4,i))
-        print(f"Mutations: {i}")
+        print(f"Mutations tetra: {i}")
     return di_generation_nmutations_coordinates,tri_generation_nmutations_coordinates,tetra_generation_nmutations_coordinates
 
 
@@ -588,6 +588,7 @@ def plot_buffer_experiment(data_diploid,data_triploid,data_tetraploid):
     # split the data in mutations and corresponding generation that fitness 1 is achieved
     data = make_df_from_data(data_diploid,data_triploid,data_tetraploid)
     sns.jointplot(data=data, x="generations", y="mutations",hue="ploidy", s=10, linewidth=0)
+    plt.savefig('bufferexperiment.png')
     plt.show()
 
 
