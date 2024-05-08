@@ -216,9 +216,7 @@ def initialize_population(initial_size:int,ploidy_number:int,loci_number:int,typ
             population.append(random.choice(Homozygous_possibilities))
     if type == 4:
         while len(population) < initial_size:
-            population.append(random.choice([[["a","b"],["a","b"],["a","b"],["a","b"]],[["A","B"],["a","b"],["a","b"],["a","b"]],
-                                            [["A","B"],["A","B"],["a","b"],["a","b"]],[["A","B"],["A","B"],["A","B"],["a","b"]],
-                                            [["A","B"],["A","B"],["A","B"],["A","B"]]]))
+            population.append([["a","B"],["a","B"],["a","B"],["a","B"]])
     if type == 5:
         while len(population) < initial_size:
             population.append([["a","B"],["a","B"],["a","B"]])
@@ -511,7 +509,7 @@ def cytotype_dynamics_buffer_experiment(initial_size:int,ploidy_number:int,loci_
             #print(fitnesscore_per_population(new_pop))
             offsprings = []
             while len(offsprings) < n:
-                if t == 100:
+                if t == 150:
                     if len(offsprings) == 0:
                     # add individual with mutation
                         a = 1
@@ -565,39 +563,21 @@ def buffer_experiment():
     # to eliminate formation of triploids use fertility factor of 0
     # for 3 kind of v: 0%, 5% and 10%
     results_di = [] # contain list of list for each v with mutations and generation that fitness 1 is reached
-    results_tetra = []
-    for v in [0]:
-        for i in [5,50,100]:
-            results_di.append(cytotype_dynamics_buffer_experiment(1000,2,2,500,v,0,2,True,0.2,0.8,0.01,6,i,0))
-            results_tetra.append(cytotype_dynamics_buffer_experiment(1000,2,2,500,v,0,2,True,0.2,0.8,0.01,4,i,0))
-    results_di = make_df_from_data([list for list in results_di for list in list],"diploid")
-    results_tetra = make_df_from_data([list for list in results_tetra for list in list],"tetraploid")
-    print(results_tetra)
-    results = pd.concat([results_di,results_tetra])
+    for v in [0.1]:
+        for i in [5,50,100,200,400,500]:
+            results_di.append(cytotype_dynamics_buffer_experiment(1000,2,2,500,v,0.05,50,True,0.2,0.8,0.01,0,i,0))
+    results = make_df_from_data([list for list in results_di for list in list],"diploid")
+    grouped = results.groupby(['ploidy', 'mutations'])['generations']
+    mean = grouped.mean()
+    std = grouped.std()
+    print(mean)
+    print(std)
     return results
 
 def plot_buffer_experiment(data):
     sns.boxplot(data=data, x="mutations", y="generations", hue="ploidy")
+    plt.legend(bbox_to_anchor=(1.02, 1), loc='upper left', borderaxespad=0)
     #plt.savefig('bufferexperiment.png')
     plt.show()
 
-# buffer experiment in single ploidy populations (diploid and tetraploid)
-#data = buffer_experiment()
-#plot_buffer_experiment(data)
-#print(data["ploidy"])
-
-# buffer experiment in mixed ploidy populations with fertility factor of 0.3 and v of 5% 10% and 12%
-
-# plot of recombination rate vs time to reach fitness 1 (in generations) in single ploidy populations
-# v=0, fertility = 0.3 recombination rate reaching from 0 to 1
-
-def plot_fitness_vs_recombination_rate_single_ploidy():
-    results = []
-    for recombination_rate in [x * 0.01 for x in range(0, 100)]:
-        results.append(cytotype_dynamics_buffer_experiment(1000,2,2,500,0,0,1,True,0.2,0.8,recombination_rate,4,0,1))
-    rec = [x * 0.01 for x in range(0, 100)]
-    return results
-
-
-
-print(plot_fitness_vs_recombination_rate_single_ploidy())
+plot_buffer_experiment(buffer_experiment())
