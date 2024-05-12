@@ -565,7 +565,7 @@ def buffer_experiment():
     results_di = [] # contain list of list for each v with mutations and generation that fitness 1 is reached
     for v in [0.1]:
         for i in [5,50,100,200,400,500]:
-            results_di.append(cytotype_dynamics_buffer_experiment(1000,2,2,500,v,0.05,50,True,0.2,0.8,0.01,0,i,0))
+            results_di.append(cytotype_dynamics_buffer_experiment(1000,4,2,500,v,0.05,50,True,0.2,0.8,0.01,0,i,0))
     results = make_df_from_data([list for list in results_di for list in list],"diploid")
     grouped = results.groupby(['ploidy', 'mutations'])['generations']
     mean = grouped.mean()
