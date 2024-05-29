@@ -469,27 +469,6 @@ def plot_fitness_vs_gen(fitness_per_generation):
     #plt.ylim(0.8,1)
     plt.show()
 
-# figure 2
-#plot_fertility_unreduced_gametes()
-
-# figure 3
-#phase_portrait() 
-    
-#Figure 4
-#cytotypespecific_frequencies_di_tri_tetraploid(cytotype_dynamics(1000,2,2,max_generations=500,v=0.01,f=0.3,reps=10,apply_fitness=False,type=None),recursive_NL_equations(max_generations=500,v=0.01,f=0.3,d1=0.25,d2=0.25,d3=0.5))
-
-# Figure 4 and 5
-#large_pop = cytotype_dynamics(1000,2,2,500,0.01,0.3,30,True)
-#cytotypespecific_frequencies_di_tri_tetraploid(large_pop,recursive_NL_equations(500,0.01,0.3,0.25,0.25,0.5))
-
-# Figure 7 Check allele count and frequencies in each cytotype
-#large_pop = cytotype_dynamics(1000,2,2,500,0,0.3,30,True)
-#allelefreq_per_generation_average_cytotypespecific(large_pop[-1],3,True)
-
-# Figure 8
-#plot_fitness_vs_gen(fitness_of_population(cytotype_dynamics(1000,2,2,500,0,0.3,30,True,recombination_frequency=0.1)[-1],0.8,0.2))
-
-# Figure 9 effect fo cytotype buffering of mutations?
 def cytotype_dynamics_buffer_experiment(initial_size:int,ploidy_number:int,loci_number:int,max_generations:int,v:float,f:float,reps:int,apply_fitness=True,selection_coeff=0.2,reference_fitness=0.8, recombination_frequency=0.01,type=None,amount_of_mutations=1,experiment=0):
     results = []
     for i in range(0,reps):
@@ -537,14 +516,6 @@ def cytotype_dynamics_buffer_experiment(initial_size:int,ploidy_number:int,loci_
             t += 1
     return results
 
-    
-
-#pop = cytotype_dynamics_buffer_experiment(1000,2,2,500,0.01,0.3,1,True,0.2,0.8,0.01,type=0)
-# In buffered experiment of cytotpe dynamics we start with a population consisting of purely the worst possible genotype in terms of 
-# fitness, we look at when the fitness of the dynamics simulation stabilizes and when it is stabilized we introduced an individual with a
-# mutation which increases the fitness aka an A allele
-#plot_fitness_vs_gen(fitness_of_population(pop[-1],0.8,0.2))
-
 def make_df_from_data(data,ploidy):
     mutations = []
     generations = []
@@ -579,4 +550,27 @@ def plot_buffer_experiment(data):
     #plt.savefig('bufferexperiment.png')
     plt.show()
 
-plot_buffer_experiment(buffer_experiment())
+
+
+# figure 5
+#phase_portrait() 
+
+# figure 6
+#plot_fertility_unreduced_gametes()
+
+#Figure 7
+#cytotypespecific_frequencies_di_tri_tetraploid(cytotype_dynamics(1000,2,2,max_generations=500,v=0.01,f=0.3,reps=10,apply_fitness=False,type=None),recursive_NL_equations(max_generations=500,v=0.01,f=0.3,d1=0.25,d2=0.25,d3=0.5))
+
+# Figure 8 and 9
+#large_pop = cytotype_dynamics(1000,2,2,500,0.01,0.3,30,True)
+#cytotypespecific_frequencies_di_tri_tetraploid(large_pop,recursive_NL_equations(500,0.01,0.3,0.25,0.25,0.5))
+
+# Figure 10 Check allele count and frequencies in each cytotype
+#large_pop = cytotype_dynamics(1000,2,2,500,0,0.3,30,True)
+#allelefreq_per_generation_average_cytotypespecific(large_pop[-1],3,True)
+
+# Figure 11
+#plot_fitness_vs_gen(fitness_of_population(cytotype_dynamics(1000,2,2,500,0,0.3,30,True,recombination_frequency=0.1)[-1],0.8,0.2))
+
+# Figure 11-15
+# plot_buffer_experiment(buffer_experiment())
