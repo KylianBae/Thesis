@@ -154,8 +154,7 @@ def cytotypespecific_frequencies_di_tri_tetraploid(data_simulation,data_equation
     plt.show()
 
 def phase_portrait(f= 0.3,v1=0.01,v3=0.07,v5=0.05,v10=0.14):
-    # haploid gamete frequency: 2g^2(2-v-2f) + g(-3+3v+3f) + (1-v-f) = 0         
-    # change in frequency: x * (4 - 2 * v - 4 * f) + (-3 + 3 * v1 + 3 * f)           
+    # haploid gamete frequency: g^2(-2+v+2f) + g(+3-3v-3f) + (-1+v+f) = 0                
     # see manuscript 
     x = np.linspace(0,1.5,100)
     y1 = x**2 * (-2 + v1 + 2 * f) + x * (-3 * v1 - 3 * f + 3) + (-1 + v1 + f) 
