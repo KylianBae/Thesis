@@ -6,6 +6,20 @@ import numpy as np
 import pandas as pd
 
 def recursive_NL_equations(max_generations,v,f,d1,d2,d3):
+    """ Within this function the mathematical model is run using equations 1-7 (see manuscript) which will simulate the cytotype dynamics
+    within an infinite size population for a determined amount of generations using the given parameters v,f,d1,d2,d3
+
+    Args:
+        max_generations (int): maximum amount of generations the model has to run for
+        v (float): probability of unreduced gamete production 
+        f (float): triploid fitness
+        d1 (float): haploid gamete production from triploid individual
+        d2 (float): diploid gamete production from triploid individual
+        d3 (float): triploid gamete production from triploid individual
+
+    Returns:
+        list: list of cytotype frequencies for each generation within the mathematical model
+    """
     # Initial conditions
     x2 = 1  # represent frequencies of diploid
     x3 = 0  # represent frequencies of triploid
@@ -29,6 +43,12 @@ def recursive_NL_equations(max_generations,v,f,d1,d2,d3):
     return max_generations,x2_list,x3_list,x4_list
 
 def plot_line(inp,title):
+    """ Function to plot the cytotype frequencies per generation
+
+    Args:
+        inp (list): cytotype frequencies for each generation
+        title (str): title of plot
+    """
     x_values =  list(range(1,inp[0]+1))
     diploid_values = inp[1]
     triploid_values = inp[2]
@@ -51,7 +71,8 @@ def plot_line(inp,title):
     plt.show()
 
 def plot_fertility_unreduced_gametes():
-
+    """Function to plot the cytotype dynamics with the unreduced gamete production on x-axis and equilibrium frequency at y-axis per triploid fitness
+    """
     def freq_fertility(fertility):
         max_generations = 100
         v_rates = [i * 0.001 for i in range(0, 251)]
@@ -127,6 +148,11 @@ def plot_fertility_unreduced_gametes():
     plot_line(v_rates,inp,inp1,inp2,inp3,inp4)
 
 def cytotypespecific_frequencies_di_tri_tetraploid(data_simulation,data_equations):
+    """Plots the cytotype frequencies per generation per repetition for each cytotype separately
+    Args:
+        data_simulation (lst): list containing the cytotype frequencies simulated by the IBM
+        data_equations (lst): list containing the cytotype frequencies simulated by the deterministic model
+    """
     t = list(range(1,data_simulation[0]+1))
     t2 = list(range(1,data_equations[0]+1))
 
@@ -154,6 +180,15 @@ def cytotypespecific_frequencies_di_tri_tetraploid(data_simulation,data_equation
     plt.show()
 
 def phase_portrait(f= 0.3,v1=0.01,v3=0.07,v5=0.05,v10=0.14):
+    """Function the form the phase portrait to study the dynamics of the haploid gamete frequency, bifurcation analysis
+
+    Args:
+        f (float, optional): triploid fitness. Defaults to 0.3.
+        v1 (float, optional): first probability of unreduced gamete production. Defaults to 0.01.
+        v3 (float, optional): second probability of unreduced gamete production. Defaults to 0.07.
+        v5 (float, optional): third probability of unreduced gamete production. Defaults to 0.05.
+        v10 (float, optional): fourth probability of unreduced gamete production. Defaults to 0.14.
+    """
     # haploid gamete frequency: g^2(-2+v+2f) + g(+3-3v-3f) + (-1+v+f) = 0                
     # see manuscript 
     x = np.linspace(0,1.5,100)
@@ -234,6 +269,16 @@ def initialize_population(initial_size:int,ploidy_number:int,loci_number:int,typ
     return population
 
 def meiosis(arg,v,f,recombination_frequency):
+    """Simulated the process of meiosis in the IBM (see manuscript)
+
+    Args:
+        arg (lst): amount of individuals
+        v (float): probability of unreduced gamete production
+        recombination_frequency (float): rate at which recombination happens
+
+    Returns:
+        individual after meiosis
+    """
     gametes = []
     arg = recombination(arg,recombination_frequency)
     if len(arg) == 2:  
@@ -264,6 +309,15 @@ def meiosis(arg,v,f,recombination_frequency):
     return tuple(gametes)
 
 def get_mean_of_freq_overreps(data,reps):
+    """Function to get the mean cytotype frequencies per generation from all repetitions
+
+    Args:
+        data (list): list with equilibrium frequencies
+        reps (int): amount of repetitions or runs of the IBM
+
+    Returns:
+        list containing mean cytotype frequencies per generation from all reps
+    """
     mean_values = [0] * len(data[0])
     for rep in data:
         for i, value in enumerate(rep):
@@ -272,6 +326,15 @@ def get_mean_of_freq_overreps(data,reps):
     return mean_values
 
 def get_mean_of_freq_overreps_counts(data,reps):
+    """Function to get the mean cytotype frequencies per generation from all repetitions
+
+    Args:
+        data (list): list with equilibrium frequencies
+        reps (int): amount of repetitions or runs of the IBM
+
+    Returns:
+        list containing mean cytotype frequencies per generation from all reps
+    """
     mean_values = [0] * len(data[0])
     for rep in data:
         for i, value in enumerate(rep):
@@ -281,6 +344,16 @@ def get_mean_of_freq_overreps_counts(data,reps):
     return mean_values
 
 def recombination(individual, recombination_frequency = 0.01, length = 2):
+    """Implementation of the process of recombination (see manuscript)
+
+    Args:
+        individual (lst): _individual in which recombination should happen
+        recombination_frequency (float, optional): probability that recombination happens per loci. Defaults to 0.01.
+        length (int, optional): amount of loci. Defaults to 2.
+
+    Returns:
+        list: new individual with recombinated genetic information
+    """
     individual = sorted(individual, key=len, reverse=True) # sort individual so first chromosome set is always longest
     # case of 2 gametes
     if len(individual) == 2:
@@ -322,6 +395,25 @@ def recombination(individual, recombination_frequency = 0.01, length = 2):
     return recombinated_individual
 
 def cytotype_dynamics(initial_size:int,ploidy_number:int,loci_number:int,max_generations:int,v:float,f:float,reps:int,apply_fitness=True,selection_coeff=0.2,reference_fitness=0.8, recombination_frequency=0.01,type=None):
+    """The individual based stochastic simulation as described in the manuscript
+
+    Args:
+        initial_size (int): initial population size (N)
+        ploidy_number (int): ploidy level of initial population
+        loci_number (int): amount of loci of each chromosome
+        max_generations (int): maximum amount of generations the IBM should be run
+        v (float): probability of unreduced gamete production
+        f (float): triploid fitness
+        reps (int): amount of repetitions the IBM should be run for
+        apply_fitness (bool, optional): apply fitness function or not. Defaults to True.
+        selection_coeff (float, optional): selection coefficient of fitness. Defaults to 0.2.
+        reference_fitness (float, optional): reference fitness score when fitness is applied. Defaults to 0.8.
+        recombination_frequency (float, optional): probability that recombination takes place per loci. Defaults to 0.01.
+        type (_type_, optional): type of population. Defaults to None.
+
+    Returns:
+        mean cytotype frequencies and population per generation 
+    """
     diploids = []
     triploids = []
     tetraploids = []
@@ -367,6 +459,17 @@ def cytotype_dynamics(initial_size:int,ploidy_number:int,loci_number:int,max_gen
     return max_generations,mean_diploids,mean_triploids,mean_tetraploids,diploids,triploids,tetraploids,population_per_generation_per_rep
 
 def fitness(individual1,individual2,selection_coeff=0.2,reference_fitness=0.8):
+    """Implemented fitness function (see manuscript)
+
+    Args:
+        individual1 (lst): list containing genetic information which forms the individual
+        individual2 (_type_): list containing genetic information which forms the individual
+        selection_coeff (float, optional): selection coefficient used in formula. Defaults to 0.2.
+        reference_fitness (float, optional):  reference fitness used in formula. Defaults to 0.8.
+
+    Returns:
+        Boolean value that determines if mating proceeds or not
+    """
     p1, p2 = len(individual1), len(individual2)
     # Allele A increases fitness and allele B decreases fitness
     All_alleles_ind_1,All_alleles_ind_2 = [element for sublist in individual1 for element in sublist], [element for sublist in individual2 for element in sublist]
@@ -382,6 +485,13 @@ def fitness(individual1,individual2,selection_coeff=0.2,reference_fitness=0.8):
         return False
 
 def allelefreq_per_generation_average_cytotypespecific(population_per_generation_per_rep, ploidy_level, freq=True):
+    """Function that plots the allelefrequencies in each generation per cytotype
+
+    Args:
+        population_per_generation_per_rep (lst): lst containing the population (all individuals) of each generation per repetition
+        ploidy_level (int): number of chromosome sets
+        freq (bool, optional): _description_. Defaults to True.
+    """
     average_A = []
     average_a = []
     average_B = []
@@ -444,6 +554,16 @@ def allelefreq_per_generation_average_cytotypespecific(population_per_generation
     plt.show()
 
 def fitness_of_population(population_per_generations_per_rep, reference_fitness, selection_coeff):
+    """Function that determines the average fitness per population per generation
+
+    Args:
+        population_per_generation_per_rep (lst): lst containing the population (all individuals) of each generation per repetition
+        reference_fitness (float): selection coefficient
+        selection_coeff (float): selection coefficient
+
+    Returns:
+        returns a list of fitness score of each population per generation per repetition
+    """
     scores_per_rep = []
     for rep in population_per_generations_per_rep: # loop over each repetition
         score_per_generation = [] 
@@ -454,6 +574,16 @@ def fitness_of_population(population_per_generations_per_rep, reference_fitness,
     return mean_fitness_of_population_over_reps
 
 def fitnesscore_per_population(population,reference_fitness=0.8,selection_coeff=0.2):
+    """Function that determines the fitnesss score of a population
+
+    Args:
+        population (lst): list of individuals
+        reference_fitness (float, optional): reference fitness score Defaults to 0.8.
+        selection_coeff (float, optional): selection coefficient. Defaults to 0.2.
+
+    Returns:
+        Fitness score of the entire population
+    """
     score = []
     for individual in population:
         All_alleles_ind = [element for sublist in individual for element in sublist]
@@ -462,6 +592,11 @@ def fitnesscore_per_population(population,reference_fitness=0.8,selection_coeff=
     return sum(score)/len(population)
 
 def plot_fitness_vs_gen(fitness_per_generation):
+    """Function to plot the fitness of the population in each generation
+
+    Args:
+        fitness_per_generation (lst): list containing the fitness score of the population in each generation
+    """
     generations = list(range(1,len(fitness_per_generation)+1))
     fig= plt.figure()
     fig.suptitle("Population fitness per generation")
@@ -470,6 +605,28 @@ def plot_fitness_vs_gen(fitness_per_generation):
     plt.show()
 
 def cytotype_dynamics_buffer_experiment(initial_size:int,ploidy_number:int,loci_number:int,max_generations:int,v:float,f:float,reps:int,apply_fitness=True,selection_coeff=0.2,reference_fitness=0.8, recombination_frequency=0.01,type=None,amount_of_mutations=1,experiment=0):
+    """The individual based stochastic simulation used in the buffer experiment as described in the manuscript
+
+    Args:
+        initial_size (int): initial population size (N)
+        ploidy_number (int): ploidy level of initial population
+        loci_number (int): amount of loci of each chromosome
+        max_generations (int): maximum amount of generations the IBM should be run
+        v (float): probability of unreduced gamete production
+        f (float): triploid fitness
+        reps (int): amount of repetitions the IBM should be run for
+        apply_fitness (bool, optional): apply fitness function or not. Defaults to True.
+        selection_coeff (float, optional): selection coefficient of fitness. Defaults to 0.2.
+        reference_fitness (float, optional): reference fitness score when fitness is applied. Defaults to 0.8.
+        recombination_frequency (float, optional): probability that recombination takes place per loci. Defaults to 0.01.
+        type (_type_, optional): type of population. Defaults to None.
+        amount_of_mutations (int, optional): amount of individuals introduced with beneficial mutation. Defaults to 1.
+        experiment (int, optional): to see if buffer experiment happens. Defaults to 0.
+
+    Returns:
+        amount of generations it takes for the population to reach the maximum fitness of 1
+    """
+
     results = []
     for i in range(0,reps):
         initial_population = initialize_population(initial_size,loci_number,ploidy_number,type=type) # na each rep opnieuw initialpop opstarten ==> dus een nieuwe onafhankelijke trials
@@ -529,6 +686,11 @@ def make_df_from_data(data,ploidy):
     return df
 
 def buffer_experiment():
+    """Function to run and plot the buffer experiment
+
+    Returns:
+        results of experiment
+    """
     # first for diploid starting population with "normal fitness" of 0.8
     # to eliminate formation of triploids use fertility factor of 0
     # for 3 kind of v: 0%, 5% and 10%
@@ -545,6 +707,11 @@ def buffer_experiment():
     return results
 
 def plot_buffer_experiment(data):
+    """Function to plot the buffer experiment
+
+    Args:
+        data (lst): maximum amount of generations necessary to reach maximum polulation fitness for each number of mutations added
+    """
     sns.boxplot(data=data, x="mutations", y="generations", hue="ploidy")
     plt.legend(bbox_to_anchor=(1.02, 1), loc='upper left', borderaxespad=0)
     #plt.savefig('bufferexperiment.png')
